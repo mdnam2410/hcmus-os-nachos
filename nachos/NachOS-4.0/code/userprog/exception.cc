@@ -333,38 +333,45 @@ void ExceptionHandler(ExceptionType which)
 			//IncreasePC();
 			break;
 
-		case SC_ReadString:
-			// Input: Buffer(char*), do dai toi da cua chuoi nhap vao(int)
-			// Output: Khong co
-			// Cong dung: Doc vao mot chuoi voi tham so la buffer va do dai toi da
-			int virtAddr, length;
-			char *buffer;
-			virtAddr = kernel->machine->ReadRegister(4); // Lay dia chi tham so buffer truyen vao tu thanh ghi so 4
-			length = kernel->machine->ReadRegister(5);	 // Lay do dai toi da cua chuoi nhap vao tu thanh ghi so 5
-			buffer = User2System(virtAddr, length);		 // Copy chuoi tu vung nho User Space sang System Space
-			gSynchConsole->Read(buffer, length);		 // Goi ham Read cua SynchConsole de doc chuoi
-			System2User(virtAddr, length, buffer);		 // Copy chuoi tu vung nho System Space sang vung nho User Space
-			delete buffer;
-			IncreasePC(); // Tang Program Counter
-			return;
-			//break;
+		// Usage: Read a string from console and put it into buffer
+		// Input: buffer (char*)
+		// 		  length (int): maximum number of characters to read
+		// Output: None
+		case SC_ReadString: {
+			// Retrieve buffer's address
+			int addr = kernel->machine->ReadRegister(4);
+			int length = kernel->machine->ReadRegister(5);
 
-		case SC_PrintString:
-			// Input: Buffer(char*)
-			// Output: Chuoi doc duoc tu buffer(char*)
-			// Cong dung: Xuat mot chuoi la tham so buffer truyen vao ra man hinh
-			int virtAddr;
-			char *buffer;
-			virtAddr = kernel->machine->ReadRegister(4); // Lay dia chi cua tham so buffer tu thanh ghi so 4
-			buffer = User2System(virtAddr, 255);		 // Copy chuoi tu vung nho User Space sang System Space voi bo dem buffer dai 255 ki tu
-			int length = 0;
-			while (buffer[length] != 0)
-				length++;							  // Dem do dai that cua chuoi
-			gSynchConsole->Write(buffer, length + 1); // Goi ham Write cua SynchConsole de in chuoi
-			delete buffer;
-			//IncreasePC(); // Tang Program Counter
-			//return;
+			char *s = new char[length + 1];
+			SysReadString(s, length);
+
+			// Place the input from kernel space to user space
+			System2User(addr, length + 1, s);
+			delete s;
 			break;
+		}
+
+		// Usage: Print a string to the console
+		// Input: buffer (char*)
+		// Output: None
+		case SC_PrintString: {
+			// Retrieve the string address in user space
+			int addr = kernel->machine->ReadRegister(4);
+
+			// Copy the string into kernel space
+			char *buffer;
+			buffer = User2System(addr, 255);
+
+			// Find the string's length
+			int len = 0;
+			while (buffer[len] != '\0' and len < 255)
+				len++;
+			
+			// Print the string to console
+			SysPrintString(buffer, len);
+			delete buffer;
+			break;
+		}
 
 		default:
 			break;
