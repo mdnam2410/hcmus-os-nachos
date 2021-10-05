@@ -115,7 +115,7 @@ else
 PROGRAMS = add halt shell matmult sort segments
 endif
 
-all: $(PROGRAMS)
+all: halt shell matmult sort readnum
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
@@ -156,6 +156,48 @@ matmult.o: matmult.c
 matmult: matmult.o start.o
 	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
 	$(COFF2NOFF) matmult.coff matmult
+
+readnum.o: readnum.c
+	$(CC) $(CFLAGS) -c readnum.c
+readnum: readnum.o start.o
+	$(LD) $(LDFLAGS) start.o readnum.o -o readnum.coff
+	$(COFF2NOFF) readnum.coff readnum
+
+printnum.o: printnum.c
+	$(CC) $(CFLAGS) -c printnum.c
+printnum: printnum.o start.o
+	$(LD) $(LDFLAGS) start.o printnum.o -o printnum.coff
+	$(COFF2NOFF) printnum.coff printnum
+
+readchar.o: readchar.c
+	$(CC) $(CFLAGS) -c readchar.c
+readchar: readchar.o start.o
+	$(LD) $(LDFLAGS) start.o readchar.o -o readchar.coff
+	$(COFF2NOFF) readchar.coff readchar
+
+printchar.o: printchar.c
+	$(CC) $(CFLAGS) -c printchar.c
+printchar: printchar.o start.o
+	$(LD) $(LDFLAGS) start.o printchar.o -o printchar.coff
+	$(COFF2NOFF) printchar.coff printchar
+
+randomnum.o: randomnum.c
+	$(CC) $(CFLAGS) -c randomnum.c
+randomnum: randomnum.o start.o
+	$(LD) $(LDFLAGS) start.o randomnum.o -o randomnum.coff
+	$(COFF2NOFF) randomnum.coff randomnum
+
+readstring.o: readstring.c
+	$(CC) $(CFLAGS) -c readstring.c
+readstring: readstring.o start.o
+	$(LD) $(LDFLAGS) start.o readstring.o -o readstring.coff
+	$(COFF2NOFF) readstring.coff readstring
+
+printstring.o: printstring.c
+	$(CC) $(CFLAGS) -c printstring.c
+printstring: printstring.o start.o
+	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
+	$(COFF2NOFF) printstring.coff printstring
 
 clean:
 	$(RM) -f *.o *.ii
