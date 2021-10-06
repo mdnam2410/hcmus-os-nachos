@@ -2,7 +2,7 @@
 
 int main()
 {
-    int a;
-    a = ReadNum();
+    int num;
+    num = ReadNum();
     return 0;
 }
