@@ -25,6 +25,9 @@
 #include "main.h"
 #include "syscall.h"
 #include "ksyscall.h"
+#include "synchconsole.h"
+#include "stdint.h"
+#include "time.h"
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -102,6 +105,180 @@ int System2User(int virtAddr, int len, char *buffer)
 	return i;
 }
 
+void ExceptionHandlerReadNum()
+{
+	// Input: None
+	// Output: Return an Integer from console
+	// Usage: Read an Integer from console
+
+	// int: [-2147483648 , 2147483647] --> max length = 10 not count char '-'
+	// Handle to not overflow int by not to allow system read more than length of int
+	const int MAX_BUFFER = 255;
+	char *num_buffer = new char[MAX_BUFFER + 1];
+	bool isPositive = true;
+	long long res = 0;
+
+	for (int i = 0; i < MAX_BUFFER; i++)
+	{
+		// get each character to check
+		char c = kernel->synchConsoleIn->GetChar();
+
+		// valid number
+		if (c >= '0' && c <= '9')
+			num_buffer[i] = c;
+
+		// negative number
+		// code like this only can handle case -{number} and {number}
+		// case {array of + and -}{number} can handle
+		else if (i == 0 && c == '-')
+		{
+			isPositive = false;
+			i--;
+		}
+
+		// when user enter after input number -> out the input
+		else if (c == 13)
+		{
+			break;
+		}
+
+		// NaN: not a number
+		else
+		{
+			printf("\n\nThe integer number is not valid");
+			DEBUG('a', "\nThe integer number is not valid");
+			kernel->machine->WriteRegister(2, 0);
+			IncreasePC();
+			delete num_buffer;
+			return;
+		}
+	}
+
+	//	convert num_buffer into a number
+	for (int i = 0; i < MAX_BUFFER; i++)
+	{
+		if (num_buffer[i] >= '0' && num_buffer[i] <= '9')
+			res = res * 10 + (int)(num_buffer[i] - '0');
+	}
+
+	// check valid with integer 32 bit limit
+	if (res > INT32_MAX || res < INT32_MIN)
+	{
+		printf("\n\nThe integer number is out of range");
+		DEBUG('a', "\nThe integer number is out of range");
+		kernel->machine->WriteRegister(2, 0);
+		IncreasePC();
+		delete num_buffer;
+		return;
+	}
+
+	// if res is negative, then opposite ret; else keep the result
+	res = (!isPositive) ? (-res) : res;
+
+	// write result res into kernel
+	kernel->machine->WriteRegister(2, (int)res);
+}
+
+void ExceptionHandlerPrintNum()
+{
+	// Input: an Integer
+	// Output: None
+	// Usage: print an Integer on console
+
+	// read number from register 4
+	int number = kernel->machine->ReadRegister(4);
+
+	/*int: [-2147483648 , 2147483647] --> max buffer = 11*/
+	const int MAX_BUFFER = 11;
+	char *num_buffer = new char[MAX_BUFFER];
+
+	// make a temp array full with 0
+	int temp[MAX_BUFFER] = {0};
+
+	// index counter
+	int i, j;
+	i = j = 0;
+
+	bool isPositive = true;
+
+	// negative number
+	if (number < 0)
+	{
+		number = -number;
+		num_buffer[i] = '-';
+		i++;
+		isPositive = false;
+	}
+
+	// save each num in number from end to start into temp array
+	do
+	{
+		temp[j] = number % 10;
+		number /= 10;
+		j++;
+	} while (number);
+
+	int length = isPositive ? j : j + 1; // real buffer size for number
+
+	while (j)
+	{
+		j--;
+		num_buffer[i] = '0' + (char)temp[j];
+		i++;
+	}
+
+	// print the result to console
+	for (int i = 0; i < length; i++)
+		kernel->synchConsoleOut->PutChar(num_buffer[i]);
+}
+
+void ExceptionHandlerRandomNum()
+{
+	srand(time(NULL));
+
+	// random positive number
+	int number;
+	do
+	{
+		// int: [-2147483648 , 2147483647] --> rand from 1 to 2147483647
+		number = rand() % 2147483647;
+	} while (number == 0);
+
+	// write number to kernel
+	kernel->machine->WriteRegister(2, number);
+}
+
+void ExceptionHandlerReadString()  {
+    // Retrieve buffer's address
+    int addr = kernel->machine->ReadRegister(4);
+    int length = kernel->machine->ReadRegister(5);
+
+    char *s = new char[length + 1];
+    SysReadString(s, length);
+
+    // Place the input from kernel space to user space
+    System2User(addr, length + 1, s);
+    delete s;
+}
+
+void ExceptionHandlerPrintString() {
+    // Retrieve the string address in user space
+    int addr = kernel->machine->ReadRegister(4);
+
+    // Copy the string into kernel space
+    char *buffer;
+    buffer = User2System(addr, 255);
+
+    // Find the string's length
+    int len = 0;
+    while (buffer[len] != '\0' and len < 255)
+      len++;
+    
+    // Print the string to console
+    SysPrintString(buffer, len);
+    delete buffer;
+}
+
 void ExceptionHandler(ExceptionType which)
 {
 	int type = kernel->machine->ReadRegister(2);
@@ -164,212 +341,50 @@ void ExceptionHandler(ExceptionType which)
 			kernel->interrupt->Halt();
 			return;
 		case SC_ReadNum:
-			// Input: K co
-			// Output: Tra ve so nguyen doc duoc tu man hinh console.
-			// Chuc nang: Doc so nguyen tu man hinh console.
-			char *buffer;
-			int MAX_BUFFER = 255;
-			buffer = new char[MAX_BUFFER + 1];
-			int numbytes = gSynchConsole->Read(buffer, MAX_BUFFER); // doc buffer toi da MAX_BUFFER ki tu, tra ve so ki tu doc dc
-			int number = 0;											// so luu ket qua tra ve cuoi cung
-
-			/* Qua trinh chuyen doi tu buffer sang so nguyen int */
-
-			// Xac dinh so am hay so duong
-			bool isNegative = false; // Gia thiet la so duong.
-			int firstNumIndex = 0;
-			int lastNumIndex = 0;
-			if (buffer[0] == '-')
-			{
-				isNegative = true;
-				firstNumIndex = 1;
-				lastNumIndex = 1;
-			}
-
-			// Kiem tra tinh hop le cua so nguyen buffer
-			for (int i = firstNumIndex; i < numbytes; i++)
-			{
-				if (buffer[i] == '.') /// 125.0000000 van la so
-				{
-					int j = i + 1;
-					for (; j < numbytes; j++)
-					{
-						// So khong hop le
-						if (buffer[j] != '0')
-						{
-							printf("\n\n The integer number is not valid");
-							DEBUG('a', "\n The integer number is not valid");
-							kernel->machine->WriteRegister(2, 0);
-							IncreasePC();
-							delete buffer;
-							return;
-						}
-					}
-					// la so thoa cap nhat lastNumIndex
-					lastNumIndex = i - 1;
-					break;
-				}
-				else if (buffer[i] < '0' && buffer[i] > '9')
-				{
-					printf("\n\n The integer number is not valid");
-					DEBUG('a', "\n The integer number is not valid");
-					kernel->machine->WriteRegister(2, 0);
-					IncreasePC();
-					delete buffer;
-					return;
-				}
-				lastNumIndex = i;
-			}
-
-			// La so nguyen hop le, tien hanh chuyen chuoi ve so nguyen
-			for (int i = firstNumIndex; i <= lastNumIndex; i++)
-			{
-				number = number * 10 + (int)(buffer[i] - 48);
-			}
-
-			// neu la so am thi * -1;
-			if (isNegative)
-			{
-				number = number * -1;
-			}
-			kernel->machine->WriteRegister(2, number);
-			IncreasePC();
-			delete buffer;
-			return;
+		{
+			ExceptionHandlerReadNum();
+			break;
+		}
 
 		case SC_PrintNum:
-			// Input: mot so integer
-			// Output: khong co
-			// Chuc nang: In so nguyen len man hinh console
-			int number = kernel->machine->ReadRegister(4);
-			if (number == 0)
-			{
-				gSynchConsole->Write("0", 1); // In ra man hinh so 0
-				IncreasePC();
-				return;
-			}
+		{
+			ExceptionHandlerPrintNum();
+			break;
+		}
 
-			/*Qua trinh chuyen so thanh chuoi de in ra man hinh*/
-			bool isNegative = false; // gia su la so duong
-			int numberOfNum = 0;	 // Bien de luu so chu so cua number
-			int firstNumIndex = 0;
-
-			if (number < 0)
-			{
-				isNegative = true;
-				number = number * -1; // Nham chuyen so am thanh so duong de tinh so chu so
-				firstNumIndex = 1;
-			}
-
-			int t_number = number; // bien tam cho number
-			while (t_number)
-			{
-				numberOfNum++;
-				t_number /= 10;
-			}
-
-			// Tao buffer chuoi de in ra man hinh
-			char *buffer;
-			int MAX_BUFFER = 255;
-			buffer = new char[MAX_BUFFER + 1];
-			for (int i = firstNumIndex + numberOfNum - 1; i >= firstNumIndex; i--)
-			{
-				buffer[i] = (char)((number % 10) + 48);
-				number /= 10;
-			}
-			if (isNegative)
-			{
-				buffer[0] = '-';
-				buffer[numberOfNum + 1] = 0;
-				gSynchConsole->Write(buffer, numberOfNum + 1);
-				delete buffer;
-				IncreasePC();
-				return;
-			}
-			buffer[numberOfNum] = 0;
-			gSynchConsole->Write(buffer, numberOfNum);
-			delete buffer;
-			IncreasePC();
-			return;
+		case SC_RandomNum:
+		{
+			ExceptionHandlerRandomNum();
+			break;
+		}
 
 		case SC_ReadChar:
-			//Input: Khong co
-			//Output: Duy nhat 1 ky tu (char)
-			//Cong dung: Doc mot ky tu tu nguoi dung nhap
-			int maxBytes = 255;
-			char *buffer = new char[255];
-			int numBytes = gSynchConsole->Read(buffer, maxBytes);
-
-			if (numBytes > 1) //Neu nhap nhieu hon 1 ky tu thi khong hop le
-			{
-				printf("Chi duoc nhap duy nhat 1 ky tu!");
-				DEBUG('a', "\nERROR: Chi duoc nhap duy nhat 1 ky tu!");
-				kernel->machine->WriteRegister(2, 0);
-			}
-			else if (numBytes == 0) //Ky tu rong
-			{
-				printf("Ky tu rong!");
-				DEBUG('a', "\nERROR: Ky tu rong!");
-				kernel->machine->WriteRegister(2, 0);
-			}
-			else
-			{
-				//Chuoi vua lay co dung 1 ky tu, lay ky tu o index = 0, return vao thanh ghi R2
-				char c = buffer[0];
-				kernel->machine->WriteRegister(2, c);
-			}
-
-			delete buffer;
-			//IncreasePC(); // error system
-			//return;
+		{
 			break;
+		}
 
 		case SC_PrintChar:
-			// Input: Ki tu(char)
-			// Output: Ki tu(char)
-			// Cong dung: Xuat mot ki tu la tham so arg ra man hinh
-			char c = (char)kernel->machine->ReadRegister(4); // Doc ki tu tu thanh ghi r4
-			gSynchConsole->Write(&c, 1);					 // In ky tu tu bien c, 1 byte
-			//IncreasePC();
+		{
 			break;
+		}
 
 		// Usage: Read a string from console and put it into buffer
 		// Input: buffer (char*)
 		// 		  length (int): maximum number of characters to read
 		// Output: None
-		case SC_ReadString: {
-			// Retrieve buffer's address
-			int addr = kernel->machine->ReadRegister(4);
-			int length = kernel->machine->ReadRegister(5);
-
-			char *s = new char[length + 1];
-			SysReadString(s, length);
-
-			// Place the input from kernel space to user space
-			System2User(addr, length + 1, s);
-			delete s;
+		case SC_ReadString:
+		{
+			ExceptionHandlerReadString();
 			break;
 		}
 
 		// Usage: Print a string to the console
 		// Input: buffer (char*)
 		// Output: None
-		case SC_PrintString: {
-			// Retrieve the string address in user space
-			int addr = kernel->machine->ReadRegister(4);
-
-			// Copy the string into kernel space
-			char *buffer;
-			buffer = User2System(addr, 255);
-
-			// Find the string's length
-			int len = 0;
-			while (buffer[len] != '\0' and len < 255)
-				len++;
-			
-			// Print the string to console
-			SysPrintString(buffer, len);
-			delete buffer;
+		case SC_PrintString:
+		{
+			ExceptionHandlerPrintString();
+			break;
 			break;
 		}
 
