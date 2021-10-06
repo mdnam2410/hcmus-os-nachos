@@ -170,7 +170,7 @@ void ExceptionHandler(ExceptionType which)
 			char *buffer;
 			int MAX_BUFFER = 255;
 			buffer = new char[MAX_BUFFER + 1];
-			int numbytes = gSynchConsole->Read(buffer, MAX_BUFFER); // doc buffer toi da MAX_BUFFER ki tu, tra ve so ki tu doc dc
+			int numbytes = kernel->synchConsoleIn->GetChar(); //->Read(buffer, MAX_BUFFER); // doc buffer toi da MAX_BUFFER ki tu, tra ve so ki tu doc dc
 			int number = 0;											// so luu ket qua tra ve cuoi cung
 
 			/* Qua trinh chuyen doi tu buffer sang so nguyen int */
@@ -296,30 +296,8 @@ void ExceptionHandler(ExceptionType which)
 			//Input: Khong co
 			//Output: Duy nhat 1 ky tu (char)
 			//Cong dung: Doc mot ky tu tu nguoi dung nhap
-			int maxBytes = 255;
-			char *buffer = new char[255];
-			int numBytes = gSynchConsole->Read(buffer, maxBytes);
-
-			if (numBytes > 1) //Neu nhap nhieu hon 1 ky tu thi khong hop le
-			{
-				printf("Chi duoc nhap duy nhat 1 ky tu!");
-				DEBUG('a', "\nERROR: Chi duoc nhap duy nhat 1 ky tu!");
-				kernel->machine->WriteRegister(2, 0);
-			}
-			else if (numBytes == 0) //Ky tu rong
-			{
-				printf("Ky tu rong!");
-				DEBUG('a', "\nERROR: Ky tu rong!");
-				kernel->machine->WriteRegister(2, 0);
-			}
-			else
-			{
-				//Chuoi vua lay co dung 1 ky tu, lay ky tu o index = 0, return vao thanh ghi R2
-				char c = buffer[0];
-				kernel->machine->WriteRegister(2, c);
-			}
-
-			delete buffer;
+			char c = kernel->synchConsoleIn->GetChar();
+			kernel->machine->WriteRegister(2, c);
 			//IncreasePC(); // error system
 			//return;
 			break;
