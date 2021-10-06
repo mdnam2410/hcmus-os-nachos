@@ -168,14 +168,16 @@ void ExceptionHandler(ExceptionType which)
 		case SC_PrintNum:
 			break;
 		case SC_ReadChar:
+		{
 			//Input: Khong co
 			//Output: Duy nhat 1 ky tu (char)
 			//Cong dung: Doc mot ky tu tu nguoi dung nhap
 			char c = kernel->synchConsoleIn->GetChar();
 			kernel->machine->WriteRegister(2, c);
 			break;
-
+		}
 		case SC_PrintChar:
+		{
 			// Input: Ki tu(char)
 			// Output: Ki tu(char)
 			// Cong dung: Xuat mot ki tu la tham so arg ra man hinh
@@ -183,6 +185,7 @@ void ExceptionHandler(ExceptionType which)
 			kernel->synchConsoleOut->PutChar(c);					 // In ky tu tu bien c, 1 byte
 			//IncreasePC();
 			break;
+		}
 
 		case SC_ReadString:
 		case SC_PrintString:
