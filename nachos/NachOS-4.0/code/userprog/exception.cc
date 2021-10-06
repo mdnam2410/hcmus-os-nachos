@@ -137,7 +137,7 @@ void ExceptionHandlerReadNum()
 		}
 
 		// when user enter after input number -> out the input
-		else if (c == 13)
+		else if (c == '\n')
 		{
 			break;
 		}
