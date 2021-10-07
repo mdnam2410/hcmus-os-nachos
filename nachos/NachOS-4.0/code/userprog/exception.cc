@@ -185,6 +185,7 @@ void ExceptionHandler(ExceptionType which)
 			kernel->synchConsoleOut->PutChar(c);					 // In ky tu tu bien c, 1 byte
 			//IncreasePC();
 			break;
+			
 		}
 
 		case SC_ReadString:
