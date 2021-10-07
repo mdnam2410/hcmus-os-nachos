@@ -248,6 +248,16 @@ void ExceptionHandlerRandomNum()
 	kernel->machine->WriteRegister(2, number);
 }
 
+void ExceptionHandlerReadChar(){
+	char c = kernel->synchConsoleIn->GetChar();
+	kernel->machine->WriteRegister(2, c);
+}
+
+void ExceptionHandlerPrintChar(){
+	char c = (char)kernel->machine->ReadRegister(4);
+	kernel->synchConsoleOut->PutChar(c);
+}
+
 void ExceptionHandler(ExceptionType which)
 {
 	int type = kernel->machine->ReadRegister(2);
@@ -329,11 +339,13 @@ void ExceptionHandler(ExceptionType which)
 
 		case SC_ReadChar:
 		{
+			ExceptionHandlerReadChar();
 			break;
 		}
 
 		case SC_PrintChar:
 		{
+			ExceptionHandlerPrintChar();
 			break;
 		}
 
