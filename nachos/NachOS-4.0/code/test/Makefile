@@ -199,6 +199,12 @@ printstring: printstring.o start.o
 	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
 	$(COFF2NOFF) printstring.coff printstring
 
+help.o: help.c
+	$(CC) $(CFLAGS) -c help.c
+help: help.o start.o
+	$(LD) $(LDFLAGS) start.o help.o -o help.coff
+	$(COFF2NOFF) help.coff help
+
 clean:
 	$(RM) -f *.o *.ii
 	$(RM) -f *.coff
