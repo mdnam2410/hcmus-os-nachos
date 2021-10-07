@@ -115,7 +115,7 @@ else
 PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help sort_new
 endif
 
-all: halt shell matmult sort readnum
+all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help sort_new
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
