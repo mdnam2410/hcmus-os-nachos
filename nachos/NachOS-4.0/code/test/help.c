@@ -7,8 +7,8 @@ int main()
         "ID       | Name\n",
         "-------- | ----------------\n", 
         "19120298 | Mai Duy Nam\n",
-        "19120690 | Vo Van Toan\n",
         "19120491 | Dang Thai Duy\n",
+        "19120690 | Vo Van Toan\n",
         "\n",
     };
 
