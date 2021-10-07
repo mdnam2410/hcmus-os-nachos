@@ -248,6 +248,37 @@ void ExceptionHandlerRandomNum()
 	kernel->machine->WriteRegister(2, number);
 }
 
+void ExceptionHandlerReadString()  {
+    // Retrieve buffer's address
+    int addr = kernel->machine->ReadRegister(4);
+    int length = kernel->machine->ReadRegister(5);
+
+    char *s = new char[length + 1];
+    SysReadString(s, length);
+
+    // Place the input from kernel space to user space
+    System2User(addr, length + 1, s);
+    delete s;
+}
+
+void ExceptionHandlerPrintString() {
+    // Retrieve the string address in user space
+    int addr = kernel->machine->ReadRegister(4);
+
+    // Copy the string into kernel space
+    char *buffer;
+    buffer = User2System(addr, 255);
+
+    // Find the string's length
+    int len = 0;
+    while (buffer[len] != '\0' and len < 255)
+      len++;
+    
+    // Print the string to console
+    SysPrintString(buffer, len);
+    delete buffer;
+}
+
 void ExceptionHandlerReadChar(){
 	char c = kernel->synchConsoleIn->GetChar();
 	kernel->machine->WriteRegister(2, c);
@@ -351,11 +382,13 @@ void ExceptionHandler(ExceptionType which)
 
 		case SC_ReadString:
 		{
+			ExceptionHandlerReadString();
 			break;
 		}
 
 		case SC_PrintString:
 		{
+			ExceptionHandlerPrintString();
 			break;
 		}
 

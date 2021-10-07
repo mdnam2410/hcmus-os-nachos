@@ -12,7 +12,12 @@
 #define __USERPROG_KSYSCALL_H__ 
 
 #include "kernel.h"
-
+// Work around to fix Nachos' crazy codebase
+// 
+// Due to the forward declarations of SynchConsoleInput and SynchConsoleOutput
+// in threads/kernel.h, the variable synchConsoleInput and synchConsoleOutput
+// aren't usable without this library included.
+#include "synchconsole.h"
 
 
 
@@ -27,7 +32,26 @@ int SysAdd(int op1, int op2)
   return op1 + op2;
 }
 
+// Reads at most `length` characters from console to `str` (null-terminated)
+int SysReadString(char *str, int length) {
+    int i = 0;
+    char c;
+    
+    // Read the input from console
+    do {
+      c = kernel->synchConsoleIn->GetChar();
+      str[i] = c;
+      ++i;
+    } while (i < length && c != '\n');
+    str[i] = '\0';
+}
 
+// Prints the string to the console at maximum `length` characters
+int SysPrintString(char* str, int length) {
+    for (int i = 0; i < length; ++i) {
+        kernel->synchConsoleOut->PutChar(str[i]);
+    }
+}
 
 
 

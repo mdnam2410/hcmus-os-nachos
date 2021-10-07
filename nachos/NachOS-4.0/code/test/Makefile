@@ -199,6 +199,24 @@ printstring: printstring.o start.o
 	$(LD) $(LDFLAGS) start.o printstring.o -o printstring.coff
 	$(COFF2NOFF) printstring.coff printstring
 
+help.o: help.c
+	$(CC) $(CFLAGS) -c help.c
+help: help.o start.o
+	$(LD) $(LDFLAGS) start.o help.o -o help.coff
+	$(COFF2NOFF) help.coff help
+
+ascii.o: ascii.c
+	$(CC) $(CFLAGS) -c ascii.c
+ascii: ascii.o start.o
+	$(LD) $(LDFLAGS) start.o ascii.o -o ascii.coff
+	$(COFF2NOFF) ascii.coff ascii
+
+sort_new.o: sort_new.c
+	$(CC) $(CFLAGS) -c sort_new.c
+sort_new: sort_new.o start.o
+	$(LD) $(LDFLAGS) start.o sort_new.o -o sort_new.coff
+	$(COFF2NOFF) sort_new.coff sort_new
+
 clean:
 	$(RM) -f *.o *.ii
 	$(RM) -f *.coff
