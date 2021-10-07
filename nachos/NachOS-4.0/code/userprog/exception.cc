@@ -380,23 +380,15 @@ void ExceptionHandler(ExceptionType which)
 			break;
 		}
 
-		// Usage: Read a string from console and put it into buffer
-		// Input: buffer (char*)
-		// 		  length (int): maximum number of characters to read
-		// Output: None
 		case SC_ReadString:
 		{
 			ExceptionHandlerReadString();
 			break;
 		}
 
-		// Usage: Print a string to the console
-		// Input: buffer (char*)
-		// Output: None
 		case SC_PrintString:
 		{
 			ExceptionHandlerPrintString();
-			break;
 			break;
 		}
 
