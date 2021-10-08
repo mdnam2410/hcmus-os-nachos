@@ -258,8 +258,8 @@ void ExceptionHandlerRandomNum()
 	int number;
 	do
 	{
-		// int: [-2147483648 , 2147483647] --> rand from 1 to 2147483647
-		number = rand() % 2147483647;
+		// random an integer number
+		number = rand();
 	} while (number == 0);
 
 	// write number to kernel
@@ -284,7 +284,7 @@ void ExceptionHandlerReadString()
 }
 
 // Usage: Print a string to the console
-// Input: Starting address of the string 
+// Input: Starting address of the string
 // Output: None
 void ExceptionHandlerPrintString()
 {
