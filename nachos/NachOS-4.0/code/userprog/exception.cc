@@ -118,7 +118,8 @@ void ExceptionHandlerReadNum()
 	bool isPositive = true;
 	long long res = 0;
 
-	for (int i = 0; i < MAX_BUFFER; i++)
+	int i = 0;
+	for (; i < MAX_BUFFER; i++)
 	{
 		// get each character to check
 		char c = kernel->synchConsoleIn->GetChar();
@@ -154,8 +155,21 @@ void ExceptionHandlerReadNum()
 		}
 	}
 
+	int length_num = i; // length of number_buffer use for number
+
+	// if input is only '-' then we throw error
+	if (!isPositive && length_num == 0)
+	{
+		printf("\n\nThe integer number is not valid");
+		DEBUG('a', "\nThe integer number is not valid");
+		kernel->machine->WriteRegister(2, 0);
+		IncreasePC();
+		delete num_buffer;
+		return;
+	}
+
 	//	convert num_buffer into a number
-	for (int i = 0; i < MAX_BUFFER; i++)
+	for (int i = 0; i < length_num; i++)
 	{
 		if (num_buffer[i] >= '0' && num_buffer[i] <= '9')
 			res = res * 10 + (int)(num_buffer[i] - '0');
@@ -234,6 +248,10 @@ void ExceptionHandlerPrintNum()
 
 void ExceptionHandlerRandomNum()
 {
+	// Input: None
+	// Output: return an integer
+	// Usage: create and return a random number
+
 	srand(time(NULL));
 
 	// random positive number
@@ -248,43 +266,47 @@ void ExceptionHandlerRandomNum()
 	kernel->machine->WriteRegister(2, number);
 }
 
-void ExceptionHandlerReadString()  {
-    // Retrieve buffer's address
-    int addr = kernel->machine->ReadRegister(4);
-    int length = kernel->machine->ReadRegister(5);
+void ExceptionHandlerReadString()
+{
+	// Retrieve buffer's address
+	int addr = kernel->machine->ReadRegister(4);
+	int length = kernel->machine->ReadRegister(5);
 
-    char *s = new char[length + 1];
-    SysReadString(s, length);
+	char *s = new char[length + 1];
+	SysReadString(s, length);
 
-    // Place the input from kernel space to user space
-    System2User(addr, length + 1, s);
-    delete s;
+	// Place the input from kernel space to user space
+	System2User(addr, length + 1, s);
+	delete s;
 }
 
-void ExceptionHandlerPrintString() {
-    // Retrieve the string address in user space
-    int addr = kernel->machine->ReadRegister(4);
+void ExceptionHandlerPrintString()
+{
+	// Retrieve the string address in user space
+	int addr = kernel->machine->ReadRegister(4);
 
-    // Copy the string into kernel space
-    char *buffer;
-    buffer = User2System(addr, 255);
+	// Copy the string into kernel space
+	char *buffer;
+	buffer = User2System(addr, 255);
 
-    // Find the string's length
-    int len = 0;
-    while (buffer[len] != '\0' and len < 255)
-      len++;
-    
-    // Print the string to console
-    SysPrintString(buffer, len);
-    delete buffer;
+	// Find the string's length
+	int len = 0;
+	while (buffer[len] != '\0' and len < 255)
+		len++;
+
+	// Print the string to console
+	SysPrintString(buffer, len);
+	delete buffer;
 }
 
-void ExceptionHandlerReadChar(){
+void ExceptionHandlerReadChar()
+{
 	char c = kernel->synchConsoleIn->GetChar();
 	kernel->machine->WriteRegister(2, c);
 }
 
-void ExceptionHandlerPrintChar(){
+void ExceptionHandlerPrintChar()
+{
 	char c = (char)kernel->machine->ReadRegister(4);
 	kernel->synchConsoleOut->PutChar(c);
 }
@@ -298,44 +320,44 @@ void ExceptionHandler(ExceptionType which)
 	case NoException:
 		return;
 	case PageFaultException:
-		DEBUG('a', "\n No valid translation found");
-		printf("\n\n No valid translation found");
+		DEBUG('a', "\n Unexpected user mode exception PageFaultException");
+		printf("\n\n Unexpected user mode exception PageFaultException");
 		kernel->interrupt->Halt();
 		break;
 
 	case ReadOnlyException:
-		DEBUG('a', "\n Write attempted to page marked read-only");
-		printf("\n\n Write attempted to page marked read-only");
+		DEBUG('a', "\n Unexpected user mode exception ReadOnlyException");
+		printf("\n\n Unexpected user mode exception ReadOnlyException");
 		kernel->interrupt->Halt();
 		break;
 
 	case BusErrorException:
-		DEBUG('a', "\n Translation resulted invalid physical address");
-		printf("\n\n Translation resulted invalid physical address");
+		DEBUG('a', "\n Unexpected user mode exception BusErrorException");
+		printf("\n\n Unexpected user mode exception BusErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case AddressErrorException:
-		DEBUG('a', "\n Unaligned reference or one that was beyond the end of the address space");
-		printf("\n\n Unaligned reference or one that was beyond the end of the address space");
+		DEBUG('a', "\n Unexpected user mode exception AddressErrorException");
+		printf("\n\n Unexpected user mode exception AddressErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case OverflowException:
-		DEBUG('a', "\nInteger overflow in add or sub.");
-		printf("\n\n Integer overflow in add or sub.");
+		DEBUG('a', "\n Unexpected user mode exception OverflowException");
+		printf("\n\n Unexpected user mode exception OverflowException");
 		kernel->interrupt->Halt();
 		break;
 
 	case IllegalInstrException:
-		DEBUG('a', "\n Unimplemented or reserved instr.");
-		printf("\n\n Unimplemented or reserved instr.");
+		DEBUG('a', "\n Unexpected user mode exception IllegalInstrException");
+		printf("\n\n Unexpected user mode exception IllegalInstrException");
 		kernel->interrupt->Halt();
 		break;
 
 	case NumExceptionTypes:
-		DEBUG('a', "\n Number exception types");
-		printf("\n\n Number exception types");
+		DEBUG('a', "\n Unexpected user mode exception NumExceptionTypes");
+		printf("\n\n Unexpected user mode exception NumExceptionTypes");
 		kernel->interrupt->Halt();
 		break;
 
@@ -343,9 +365,10 @@ void ExceptionHandler(ExceptionType which)
 		switch (type)
 		{
 		case SC_Halt:
-			// Input: Khong co
-			// Output: Thong bao tat may
-			// Chuc nang: Tat HDH
+			// Input: None
+			// Output: Shutdown notification
+			// Usage: Shutdown
+
 			DEBUG('a', "\nShutdown, initiated by user program. ");
 			printf("\nShutdown, initiated by user program. ");
 			kernel->interrupt->Halt();
@@ -395,6 +418,7 @@ void ExceptionHandler(ExceptionType which)
 		default:
 			break;
 		}
+		// after each SyscallException, we need to increase PC to do next instruction
 		IncreasePC();
 	}
 }
