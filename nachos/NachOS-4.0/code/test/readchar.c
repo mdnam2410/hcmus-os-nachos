@@ -2,10 +2,7 @@
 
 int main()
 {
-    printf("hllo");
-    char c = ReadChar();
-    PrintChar(c);
-    PrintChar(c);
-    Halt();
+    char c = '\0';
+    c = ReadChar();
     return 0;
 }

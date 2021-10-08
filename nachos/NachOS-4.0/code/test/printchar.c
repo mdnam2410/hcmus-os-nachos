@@ -3,6 +3,5 @@
 int main()
 {
     PrintChar('a');
-    Halt();
     return 0;
 }
