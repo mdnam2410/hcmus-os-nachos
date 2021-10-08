@@ -266,6 +266,9 @@ void ExceptionHandlerRandomNum()
 	kernel->machine->WriteRegister(2, number);
 }
 
+// Usage: Read a string from console to user space
+// Input: The buffer's address
+// Output: None
 void ExceptionHandlerReadString()
 {
 	// Retrieve buffer's address
@@ -280,6 +283,9 @@ void ExceptionHandlerReadString()
 	delete s;
 }
 
+// Usage: Print a string to the console
+// Input: Starting address of the string 
+// Output: None
 void ExceptionHandlerPrintString()
 {
 	// Retrieve the string address in user space

@@ -47,9 +47,9 @@ int main() {
     int (*sortFunction)(int, int);
     char buffer[2];
 
+    // Get array size
     PrintString("Enter array size: ");
     arraySize = ReadNum();
-
     if (arraySize > MAX_SIZE) {
         PrintString("Array size cannot be greater than ");
         PrintString(MAX_SIZE_STRING);
@@ -57,9 +57,8 @@ int main() {
         Halt();
     }
 
+    // Get sort direction
     PrintString("Sort by (ascending: <, descending: >): ");
-
-    // The ReadChar() system call seems broken
     ReadString(buffer, 2);
     sortDirection = buffer[0];
     if (sortDirection == '<') {
@@ -71,16 +70,16 @@ int main() {
         Halt();
     }
 
+    // Get array elements
     for (i = 0; i < arraySize; ++i) {
         PrintString("Enter element: ");
         a[i] = ReadNum();
     }
 
+    // Sort and display result
     PrintString("You've entered: ");
     PrintArray(a, arraySize);
-
     Sort(a, arraySize, sortFunction);
-
     PrintString("Sorted: ");
     PrintArray(a, arraySize);
 }

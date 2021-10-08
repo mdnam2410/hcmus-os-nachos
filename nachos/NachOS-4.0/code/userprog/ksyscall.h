@@ -32,7 +32,8 @@ int SysAdd(int op1, int op2)
   return op1 + op2;
 }
 
-// Reads at most `length` characters from console to `str` (null-terminated)
+// Reads at most `length` characters or until newline
+// from console to `str` (null-terminated)
 int SysReadString(char *str, int length) {
     int i = 0;
     char c;
@@ -46,7 +47,7 @@ int SysReadString(char *str, int length) {
     str[i] = '\0';
 }
 
-// Prints the string to the console at maximum `length` characters
+// Prints at most `length` characters from `str` to console
 int SysPrintString(char* str, int length) {
     for (int i = 0; i < length; ++i) {
         kernel->synchConsoleOut->PutChar(str[i]);
