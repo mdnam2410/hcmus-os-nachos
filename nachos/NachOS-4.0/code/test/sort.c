@@ -1,69 +1,85 @@
-/* sort.c 
- *    Test program to sort a large number of integers.
- *
- *    Intention is to stress virtual memory system.
- *
- *    Ideally, we could read the unsorted array off of the file system,
- *	and store the result back to the file system!
- */
-
-
-/*
-#define UNIX
-#define UNIX_DEBUG
-*/
-
-#ifdef UNIX
-#include <stdio.h>
-#define Exit exit
-#else
 #include "syscall.h"
-#endif /* UNIX */
 
-#define SIZE (1024)
-
-int A[SIZE];	/* size of physical memory; with code, we'll run out of space!*/
-
-int
-main()
-{
-    int i, j, tmp;
-
-    /* first initialize the array, in reverse sorted order */
-    for (i = 0; i < SIZE; i++) {
-        A[i] = (SIZE-1) - i;
+void PrintArray(int a[], int size) {
+    int i = 0;
+    for (; i < size; ++i) {
+        PrintNum(a[i]);
+        PrintChar(' ');
     }
+    PrintChar('\n');
+}
 
-    /* then sort! */
-    for (i = 0; i < SIZE; i++) {
-        for (j = 0; j < (SIZE-1); j++) {
-	   if (A[j] > A[j + 1]) {	/* out of order -> need to swap ! */
-	      tmp = A[j];
-	      A[j] = A[j + 1];
-	      A[j + 1] = tmp;
-    	   }
+int Less(int a, int b) {
+    return a < b;
+}
+
+int Greater(int a, int b) {
+    return a > b;
+}
+
+int Swap(int *a, int *b) {
+    int t;
+    t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int Sort(int a[], int size, int (*sort_fn)(int, int)) {
+    int i, j;
+    for (j = size; j > 0; --j) {
+        for (i = 0; i < j - 1; ++i) {
+            if (sort_fn(a[i], a[i + 1]) == 0) {
+                Swap(&a[i], &a[i + 1]);
+            }
         }
     }
+}
 
-#ifdef UNIX_DEBUG
-    for (i=0; i<SIZE; i++) {
-        printf("%4d ", A[i]);
-	if (((i+1) % 15) == 0) {
-		printf("\n");
-        }
-        if (A[i] != i) {
-            fprintf(stderr, "Out of order A[%d] = %d\n", i, A[i]);
-            Exit(1);
-        }   
+int main() {
+    const int MAX_SIZE = 20;
+    const char* MAX_SIZE_STRING = "20";
+
+    int arraySize;
+    int a[MAX_SIZE];
+    int i;
+    
+    char sortDirection;
+    int (*sortFunction)(int, int);
+    char buffer[2];
+
+    // Get array size
+    PrintString("Enter array size: ");
+    arraySize = ReadNum();
+    if (arraySize > MAX_SIZE) {
+        PrintString("Array size cannot be greater than ");
+        PrintString(MAX_SIZE_STRING);
+        PrintString("\n. Aborting.\n");
+        Halt();
     }
-    printf("\n");
-#endif /* UNIX_DEBUG */
 
-    for (i=0; i<SIZE; i++) {
-        if (A[i] != i) {
-            Exit(1);
-        }   
+    // Get sort direction
+    PrintString("Sort by (ascending: <, descending: >): ");
+    ReadString(buffer, 2);
+    sortDirection = buffer[0];
+    if (sortDirection == '<') {
+        sortFunction = Less;
+    } else if (sortDirection == '>') {
+        sortFunction = Greater;
+    } else {
+        PrintString("Invalid sort direction. Aborting.\n");
+        Halt();
     }
 
-    Exit(0);
+    // Get array elements
+    for (i = 0; i < arraySize; ++i) {
+        PrintString("Enter element: ");
+        a[i] = ReadNum();
+    }
+
+    // Sort and display result
+    PrintString("You've entered: ");
+    PrintArray(a, arraySize);
+    Sort(a, arraySize, sortFunction);
+    PrintString("Sorted: ");
+    PrintArray(a, arraySize);
 }
