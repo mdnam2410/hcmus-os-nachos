@@ -249,7 +249,7 @@ void ExceptionHandlerPrintNum()
 void ExceptionHandlerRandomNum()
 {
 	// Input: None
-	// Output: return an integer
+	// Output: return an positive integer
 	// Usage: create and return a random number
 
 	srand(time(NULL));
@@ -258,7 +258,7 @@ void ExceptionHandlerRandomNum()
 	int number;
 	do
 	{
-		// random an integer number
+		// random an positive integer number
 		number = rand();
 	} while (number == 0);
 
