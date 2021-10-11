@@ -302,7 +302,7 @@ void ExceptionHandlerPrintString()
 
 	// Find the string's length
 	int len = 0;
-	while (buffer[len] != '\0' and len < 255)
+	while (buffer[len] != '\0' && len < 255)
 		len++;
 
 	// Print the string to console
@@ -310,12 +310,25 @@ void ExceptionHandlerPrintString()
 	delete buffer;
 }
 
+// Usage: Read a char to the console
+// Input: None
+// Output: None
+// Only return the first char of string input
 void ExceptionHandlerReadChar()
 {
-	char c = kernel->synchConsoleIn->GetChar();
+	// Retrieve buffer's address
+	int length = 255;
+
+	char *s = new char[length + 1];
+	SysReadString(s, length);
+	char c = s[0];
+	delete s;
 	kernel->machine->WriteRegister(2, c);
 }
 
+// Usage: Print a char to the console
+// Input: A char
+// Output: None
 void ExceptionHandlerPrintChar()
 {
 	char c = (char)kernel->machine->ReadRegister(4);
@@ -425,7 +438,6 @@ void ExceptionHandler(ExceptionType which)
 			ExceptionHandlerPrintString();
 			break;
 		}
-
 		default:
 			break;
 		}
