@@ -2,6 +2,6 @@
 
 int main()
 {
-
+    PrintChar('a');
     return 0;
 }
