@@ -66,11 +66,11 @@ void IncreasePC()
 	kernel->machine->WriteRegister(NextPCReg, counter + 4);
 }
 
-// Input: User space address(int) - limit of buffer (int)
-// Output: cache Buffer (char*)
-// Usage: Copy user memory space to system memory space
 char *User2System(int virtAddr, int limit)
 {
+	// Input: User space address(int) - limit of buffer (int)
+	// Output: cache Buffer (char*)
+	// Usage: Copy user memory space to system memory space
 	int i; //chi so index
 	int oneChar;
 	char *kernelBuf = NULL;
@@ -90,11 +90,12 @@ char *User2System(int virtAddr, int limit)
 	return kernelBuf;
 }
 
-// Input: User memory space (int) - limit of buffer (int) - cache of buffer (char*)
-// Output: number of bytes copied
-// Usage: Copy System memory space to User memory space
 int System2User(int virtAddr, int len, char *buffer)
 {
+	// Input: User memory space (int) - limit of buffer (int) - cache of buffer (char*)
+	// Output: number of bytes copied
+	// Usage: Copy System memory space to User memory space
+
 	if (len < 0)
 		return -1;
 	if (len == 0)
