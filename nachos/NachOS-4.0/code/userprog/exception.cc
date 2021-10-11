@@ -54,16 +54,21 @@
 // Doi thanh ghi Program counter cua he thong ve sau 4 byte de tiep tuc nap lenh
 void IncreasePC()
 {
+	// read current PC and set value of it to counter
 	int counter = kernel->machine->ReadRegister(PCReg);
+	// update previous PC = counter
 	kernel->machine->WriteRegister(PrevPCReg, counter);
+	// read next PC and set value of it to counter
 	counter = kernel->machine->ReadRegister(NextPCReg);
+	// update current PC = counter
 	kernel->machine->WriteRegister(PCReg, counter);
+	// update next PC = counter + 4 (all instructions are 4 bytes wide)
 	kernel->machine->WriteRegister(NextPCReg, counter + 4);
 }
 
-// Input: Khong gian dia chi User(int) - gioi han cua buffer(int)
-// Output: Bo nho dem Buffer(char*)
-// Chuc nang: Sao chep vung nho User sang vung nho System
+// Input: User space address(int) - limit of buffer (int)
+// Output: cache Buffer (char*)
+// Usage: Copy user memory space to system memory space
 char *User2System(int virtAddr, int limit)
 {
 	int i; //chi so index
@@ -85,9 +90,9 @@ char *User2System(int virtAddr, int limit)
 	return kernelBuf;
 }
 
-// Input: Khong gian vung nho User(int) - gioi han cua buffer(int) - bo nho dem buffer(char*)
-// Output: So byte da sao chep(int)
-// Chuc nang: Sao chep vung nho System sang vung nho User
+// Input: User memory space (int) - limit of buffer (int) - cache of buffer (char*)
+// Output: number of bytes copied
+// Usage: Copy System memory space to User memory space
 int System2User(int virtAddr, int len, char *buffer)
 {
 	if (len < 0)
