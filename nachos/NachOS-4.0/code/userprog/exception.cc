@@ -155,7 +155,6 @@ void ExceptionHandlerReadNum()
 			printf("\n\nThe integer number is not valid");
 			DEBUG('a', "\nThe integer number is not valid");
 			kernel->machine->WriteRegister(2, 0);
-			IncreasePC();
 			delete num_buffer;
 			return;
 		}
@@ -169,7 +168,6 @@ void ExceptionHandlerReadNum()
 		printf("\n\nThe integer number is not valid");
 		DEBUG('a', "\nThe integer number is not valid");
 		kernel->machine->WriteRegister(2, 0);
-		IncreasePC();
 		delete num_buffer;
 		return;
 	}
@@ -187,7 +185,6 @@ void ExceptionHandlerReadNum()
 		printf("\n\nThe integer number is out of range");
 		DEBUG('a', "\nThe integer number is out of range");
 		kernel->machine->WriteRegister(2, 0);
-		IncreasePC();
 		delete num_buffer;
 		return;
 	}
