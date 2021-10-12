@@ -122,6 +122,7 @@ void ExceptionHandlerReadNum()
 	const int MAX_BUFFER = 255;
 	char *num_buffer = new char[MAX_BUFFER + 1];
 	bool isPositive = true;
+	bool isNaN = false;
 	long long res = 0;
 
 	int i = 0;
@@ -152,18 +153,14 @@ void ExceptionHandlerReadNum()
 		// NaN: not a number
 		else
 		{
-			printf("\n\nThe integer number is not valid");
-			DEBUG('a', "\nThe integer number is not valid");
-			kernel->machine->WriteRegister(2, 0);
-			delete num_buffer;
-			return;
+			isNaN = true;
 		}
 	}
 
 	int length_num = i; // length of number_buffer use for number
 
-	// if input is only '-' then we throw error
-	if (!isPositive && length_num == 0)
+	// if input is only '-' or not a number then we throw error
+	if ((!isPositive && length_num == 0) || isNaN)
 	{
 		printf("\n\nThe integer number is not valid");
 		DEBUG('a', "\nThe integer number is not valid");
