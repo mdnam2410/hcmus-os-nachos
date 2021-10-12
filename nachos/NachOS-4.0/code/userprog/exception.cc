@@ -51,7 +51,7 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
-// Doi thanh ghi Program counter cua he thong ve sau 4 byte de tiep tuc nap lenh
+// Update current Program counter to the next Program counter
 void IncreasePC()
 {
 	// read current PC and set value of it to counter
@@ -66,15 +66,15 @@ void IncreasePC()
 	kernel->machine->WriteRegister(NextPCReg, counter + 4);
 }
 
+// Input: User space address(int) - limit of buffer (int)
+// Output: cache Buffer (char*)
+// Usage: Copy user memory space to system memory space
 char *User2System(int virtAddr, int limit)
 {
-	// Input: User space address(int) - limit of buffer (int)
-	// Output: cache Buffer (char*)
-	// Usage: Copy user memory space to system memory space
-	int i; //chi so index
+	int i; // Index
 	int oneChar;
 	char *kernelBuf = NULL;
-	kernelBuf = new char[limit + 1]; //can cho chuoi terminal
+	kernelBuf = new char[limit + 1]; // need for terminal
 	if (kernelBuf == NULL)
 		return kernelBuf;
 
@@ -90,11 +90,11 @@ char *User2System(int virtAddr, int limit)
 	return kernelBuf;
 }
 
+// Input: User memory space (int) - limit of buffer (int) - cache of buffer (char*)
+// Output: number of bytes copied
+// Usage: Copy System memory space to User memory space
 int System2User(int virtAddr, int len, char *buffer)
 {
-	// Input: User memory space (int) - limit of buffer (int) - cache of buffer (char*)
-	// Output: number of bytes copied
-	// Usage: Copy System memory space to User memory space
 
 	if (len < 0)
 		return -1;
@@ -111,11 +111,11 @@ int System2User(int virtAddr, int len, char *buffer)
 	return i;
 }
 
+// Input: None
+// Output: Return an Integer from console
+// Usage: Read an Integer from console
 void ExceptionHandlerReadNum()
 {
-	// Input: None
-	// Output: Return an Integer from console
-	// Usage: Read an Integer from console
 
 	// int: [-2147483648 , 2147483647] --> max length = 10 not count char '-'
 	// Handle to not overflow int by not to allow system read more than length of int
@@ -193,11 +193,11 @@ void ExceptionHandlerReadNum()
 	kernel->machine->WriteRegister(2, (int)res);
 }
 
+// Input: an Integer
+// Output: None
+// Usage: print an Integer on console
 void ExceptionHandlerPrintNum()
 {
-	// Input: an Integer
-	// Output: None
-	// Usage: print an Integer on console
 
 	// read number from register 4
 	int number = kernel->machine->ReadRegister(4);
@@ -246,11 +246,11 @@ void ExceptionHandlerPrintNum()
 		kernel->synchConsoleOut->PutChar(num_buffer[i]);
 }
 
+// Input: None
+// Output: return an positive integer
+// Usage: create and return a random number
 void ExceptionHandlerRandomNum()
 {
-	// Input: None
-	// Output: return an positive integer
-	// Usage: create and return a random number
 
 	srand(time(NULL));
 
