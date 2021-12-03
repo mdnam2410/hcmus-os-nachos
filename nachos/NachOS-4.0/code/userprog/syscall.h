@@ -44,6 +44,14 @@
 #define SC_ReadString 21
 #define SC_PrintString 22
 
+// Syscalls for semaphore
+#define SC_CreateSemaphore 23
+#define SC_Wait 24
+#define SC_Signal 25
+
+// CreateFile (redundant?)
+#define SC_CreateFile 26
+
 #define SC_Add 42
 
 #ifndef IN_ASM
@@ -108,6 +116,12 @@ SpaceId ExecV(int argc, char *argv[]);
  * Return the exit status.
  */
 int Join(SpaceId id);
+
+int CreateSemaphore(char *name, int semval);
+
+int Wait(char *name);
+
+int Signal(char *name);
 
 /* File system operations: Create, Remove, Open, Read, Write, Close
  * These functions are patterned after UNIX -- files represent

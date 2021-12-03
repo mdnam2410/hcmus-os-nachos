@@ -317,6 +317,67 @@ void ExceptionHandlerPrintChar()
 	kernel->synchConsoleOut->PutChar(c);
 }
 
+void ExceptionHandlerCreate()
+{
+	// Use kernel->fileSystem->Create();
+}
+
+// ??
+void ExceptionHandlerCreateFile()
+{
+	// Use kernel->fileSystem->Create();
+}
+
+void ExceptionHandlerOpen()
+{
+	// kernel->machine->ReadRegister()
+}
+
+void ExceptionHandlerClose()
+{
+
+}
+
+void ExceptionHandlerRead()
+{
+
+}
+
+void ExceptionHandlerWrite()
+{
+
+}
+
+void ExceptionHandlerExec()
+{
+
+}
+
+void ExceptionHandlerJoin()
+{
+
+}
+
+void ExceptionHandlerExit()
+{
+
+}
+
+void ExceptionHandlerCreateSemaphore()
+{
+
+}
+
+void ExceptionHandlerWait()
+{
+
+}
+
+void ExceptionHandlerSignal()
+{
+
+}
+
 void ExceptionHandler(ExceptionType which)
 {
 	int type = kernel->machine->ReadRegister(2);
@@ -418,6 +479,72 @@ void ExceptionHandler(ExceptionType which)
 		case SC_PrintString:
 		{
 			ExceptionHandlerPrintString();
+			break;
+		}
+
+		case SC_Create:
+		{
+			ExceptionHandlerCreate();
+			break;
+		}
+
+		case SC_Open:
+		{
+			ExceptionHandlerOpen();
+			break;
+		}
+
+		case SC_Close:
+		{
+			ExceptionHandlerClose();
+			break;
+		}
+
+		case SC_Read:
+		{
+			ExceptionHandlerRead();
+			break;
+		}
+
+		case SC_Write:
+		{
+			ExceptionHandlerWrite();
+			break;
+		}
+
+		case SC_Exec:
+		{
+			ExceptionHandlerExec();
+			break;
+		}
+
+		case SC_Join:
+		{
+			ExceptionHandlerJoin();
+			break;
+		}
+
+		case SC_Exit:
+		{
+			ExceptionHandlerExit();
+			break;
+		}
+
+		case SC_CreateSemaphore:
+		{
+			ExceptionHandlerCreateSemaphore();
+			break;
+		}
+
+		case SC_Wait:
+		{
+			ExceptionHandlerWait();
+			break;
+		}
+
+		case SC_Signal:
+		{
+			ExceptionHandlerSignal();
 			break;
 		}
 

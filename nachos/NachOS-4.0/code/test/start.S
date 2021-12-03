@@ -156,6 +156,14 @@ Create:
 
 	.globl Remove
 	.ent	Remove
+CreateFile:
+	addiu $2,$0,SC_CreateFile
+	syscall
+	j	$31
+	.end Create
+
+	.globl Remove
+	.ent	Remove
 Remove:
 	addiu $2,$0,SC_Remove
 	syscall
@@ -233,7 +241,30 @@ ThreadJoin:
 	syscall
 	j 	$31
 	.end ThreadJoin
-	
+CreateSemaphore:
+	addiu $2,$0,SC_CreateSemaphore
+	syscall
+	j	$31
+	.end Create
+
+	.globl Remove
+	.ent	Remove	
+Wait:
+	addiu $2,$0,SC_Wait
+	syscall
+	j	$31
+	.end Create
+
+	.globl Remove
+	.ent	Remove
+Signal:
+	addiu $2,$0,SC_Signal
+	syscall
+	j	$31
+	.end Create
+
+	.globl Remove
+	.ent	Remove
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main
