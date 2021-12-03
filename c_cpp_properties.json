@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}",
+                "nachos/NachOS-4.0/code/filesys",
+                "nachos/NachOS-4.0/code/lib",
+                "nachos/NachOS-4.0/code/machine",
+                "nachos/NachOS-4.0/code/network",
+                "nachos/NachOS-4.0/code/threads",
+                "nachos/NachOS-4.0/code/userprog"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
