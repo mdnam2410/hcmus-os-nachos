@@ -160,7 +160,7 @@ CreateFile:
 	addiu $2,$0,SC_CreateFile
 	syscall
 	j	$31
-	.end Create
+	.end CreateFile
 
 	.globl Remove
 	.ent	Remove
@@ -245,7 +245,7 @@ CreateSemaphore:
 	addiu $2,$0,SC_CreateSemaphore
 	syscall
 	j	$31
-	.end Create
+	.end CreateSemaphore
 
 	.globl Remove
 	.ent	Remove	
@@ -253,7 +253,7 @@ Wait:
 	addiu $2,$0,SC_Wait
 	syscall
 	j	$31
-	.end Create
+	.end Wait
 
 	.globl Remove
 	.ent	Remove
@@ -261,7 +261,7 @@ Signal:
 	addiu $2,$0,SC_Signal
 	syscall
 	j	$31
-	.end Create
+	.end Signal
 
 	.globl Remove
 	.ent	Remove
