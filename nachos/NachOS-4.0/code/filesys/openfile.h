@@ -1,5 +1,5 @@
-// openfile.h 
-//	Data structures for opening, closing, reading and writing to 
+// openfile.h
+//	Data structures for opening, closing, reading and writing to
 //	individual files.  The operations supported are similar to
 //	the UNIX ones -- type 'man open' to the UNIX prompt.
 //
@@ -8,13 +8,13 @@
 //	(cf. comment in filesys.h).
 //
 //	The other is the "real" implementation, that turns these
-//	operations into read and write disk sector requests. 
-//	In this baseline implementation of the file system, we don't 
+//	operations into read and write disk sector requests.
+//	In this baseline implementation of the file system, we don't
 //	worry about concurrent accesses to the file system
 //	by different threads.
 //
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #ifndef OPENFILE_H
@@ -24,72 +24,134 @@
 #include "utility.h"
 #include "sysdep.h"
 
-#ifdef FILESYS_STUB			// Temporarily implement calls to 
+#ifdef FILESYS_STUB // Temporarily implement calls to
 					// Nachos file system as calls to UNIX!
 					// See definitions listed under #else
-class OpenFile {
-  public:
-    OpenFile(int f) { file = f; currentOffset = 0; }	// open the file
-    ~OpenFile() { Close(file); }			// close the file
+class OpenFile
+{
+private:
+	int file;
+	int currentOffset;
 
-    int ReadAt(char *into, int numBytes, int position) { 
-    		Lseek(file, position, 0); 
-		return ReadPartial(file, into, numBytes); 
-		}	
-    int WriteAt(char *from, int numBytes, int position) { 
-    		Lseek(file, position, 0); 
-		WriteFile(file, from, numBytes); 
+public:
+	int type;
+	// 0: read and write
+	// 1: read only
+	// 2: stdin
+	// 3: stdout
+
+	// open the file
+	OpenFile(int f)
+	{
+		file = f;
+		currentOffset = 0;
+		type = 0;
+	}
+
+	// open file: has argument type
+	OpenFile(int f, int t)
+	{
+		file = f;
+		currentOffset = 0;
+		type = t;
+	}
+
+	~OpenFile() { Close(file); } // close the file
+
+	int ReadAt(char *into, int numBytes, int position)
+	{
+		Lseek(file, position, 0);
+		return ReadPartial(file, into, numBytes);
+	}
+	int WriteAt(char *from, int numBytes, int position)
+	{
+		Lseek(file, position, 0);
+		WriteFile(file, from, numBytes);
 		return numBytes;
-		}	
-    int Read(char *into, int numBytes) {
-		int numRead = ReadAt(into, numBytes, currentOffset); 
+	}
+	int Read(char *into, int numBytes)
+	{
+		int numRead = ReadAt(into, numBytes, currentOffset);
 		currentOffset += numRead;
 		return numRead;
-    		}
-    int Write(char *from, int numBytes) {
-		int numWritten = WriteAt(from, numBytes, currentOffset); 
+	}
+	int Write(char *from, int numBytes)
+	{
+		int numWritten = WriteAt(from, numBytes, currentOffset);
 		currentOffset += numWritten;
 		return numWritten;
-		}
+	}
 
-    int Length() { Lseek(file, 0, 2); return Tell(file); }
-    
-  private:
-    int file;
-    int currentOffset;
+	int Length()
+	{
+		int len;
+		Lseek(file, 0, 2);
+		len = Tell(file);
+		Lseek(file, currentOffset, 0);
+		return len;
+	}
+
+	// Seek cursor to postion
+	int Seek(int pos)
+	{
+		Lseek(file, pos, 0);
+		currentOffset = Tell(file);
+		return currentOffset;
+	}
+
+	// Get current position of cursor
+	int GetCurrentPos()
+	{
+		currentOffset = Tell(file);
+		return currentOffset;
+	}
 };
 
 #else // FILESYS
 class FileHeader;
 
-class OpenFile {
-  public:
-    OpenFile(int sector);		// Open a file whose header is located
-					// at "sector" on the disk
-    ~OpenFile();			// Close the file
+class OpenFile
+{
+public:
+	int type;
+	// 0: read and write
+	// 1: read only
+	// 2: stdin
+	// 3: stdout
+	OpenFile(int sector); // Open a file whose header is located
+						  // at "sector" on the disk
 
-    void Seek(int position); 		// Set the position from which to 
-					// start reading/writing -- UNIX lseek
+	OpenFile(int sector, int type); // Open a file with type
 
-    int Read(char *into, int numBytes); // Read/write bytes from the file,
-					// starting at the implicit position.
-					// Return the # actually read/written,
-					// and increment position in file.
-    int Write(char *from, int numBytes);
+	~OpenFile(); // Close the file
 
-    int ReadAt(char *into, int numBytes, int position);
-    					// Read/write bytes from the file,
-					// bypassing the implicit position.
-    int WriteAt(char *from, int numBytes, int position);
+	void Seek(int position); // Set the position from which to
+							 // start reading/writing -- UNIX lseek
 
-    int Length(); 			// Return the number of bytes in the
-					// file (this interface is simpler 
-					// than the UNIX idiom -- lseek to 
-					// end of file, tell, lseek back 
-    
-  private:
-    FileHeader *hdr;			// Header for this file 
-    int seekPosition;			// Current position within the file
+	int Read(char *into, int numBytes); // Read/write bytes from the file,
+										// starting at the implicit position.
+										// Return the # actually read/written,
+										// and increment position in file.
+	int Write(char *from, int numBytes);
+
+	int ReadAt(char *into, int numBytes, int position);
+	// Read/write bytes from the file,
+	// bypassing the implicit position.
+	int WriteAt(char *from, int numBytes, int position);
+
+	int Length(); // Return the number of bytes in the
+				  // file (this interface is simpler
+				  // than the UNIX idiom -- lseek to
+				  // end of file, tell, lseek back
+
+	int GetCurrentPos()
+	{
+		return seekPosition;
+	}
+
+private:
+	FileHeader *hdr;  // Header for this file
+	int seekPosition; // Current position within the file
 };
 
 #endif // FILESYS
