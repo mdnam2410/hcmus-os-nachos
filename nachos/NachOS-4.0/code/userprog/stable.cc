@@ -45,16 +45,16 @@ int STable::Create(char *name, int semVal)
 		}
 		
 	}
-	// find free slot in semTab
+	// Find free slot in semTab
 	int id = this->FindFreeSlot();
 	
-	// if semTab is full then return -1
+	// If semTab is full then return -1
 	if(id < 0)
 	{
 		return -1;
 	}
 
-    // if find empty slot then load semaphore to semTab[id]
+    // If find empty slot then load semaphore to semTab[id]
 	this->semTab[id] = new Semaphore(name, semVal);
 	return 0;
 }
@@ -66,12 +66,11 @@ int STable::Wait(char *name)
         // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
-			// Neu co thi tien hanh so sanh name voi name cua semaphore trong semTab
             // if yes then compare nam with name of semaphore in semTab
 			if(strcmp(name, semTab[i]->GetName()) == 0)
 			{
-				// Neu ton tai thi cho semaphore down(); 
-				semTab[i]->Acquire();
+                // If exist then make semaphore down()
+				semTab[i]->P();
 				return 0;
 			}
 		}
@@ -84,14 +83,14 @@ int STable::Signal(char *name)
 {
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
-		// Kiem tra o thu i da duoc nap semaphore chua
+        // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
-			// Neu co thi tien hanh so sanh name voi name cua semaphore trong semTab
+            // if yes then compare nam with name of semaphore in semTab
 			if(strcmp(name, semTab[i]->GetName()) == 0)
 			{
-				// Neu ton tai thi cho semaphore up(); 
-				semTab[i]->Release();
+                // If exist then make semaphore up()
+				semTab[i]->V();
 				return 0;
 			}
 		}

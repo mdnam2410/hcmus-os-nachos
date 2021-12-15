@@ -7,9 +7,9 @@
 class STable
 {
 private:
-    // empty slot manager
+    // Manager empty slot
 	BitMap* bm;
-    // mange maximum 10 objects Lock
+    // Semaphore manger (10 semaphore)
 	Semaphore* semTab[MAX_SEMAPHORE];
 public:
     // Constructor
