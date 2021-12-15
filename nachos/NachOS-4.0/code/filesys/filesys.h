@@ -46,7 +46,7 @@ public:
 	OpenFile **openTable;
 
 	// Constructor
-	FileSystem(bool format)
+	FileSystem()
 	{
 		// allocate openTable
 		openTable = new OpenFile *[10];
@@ -71,7 +71,7 @@ public:
 		delete[] openTable;
 	}
 
-	bool Create(char *name)
+	bool Create(char *name, int initialSize)
 	{
 		int fileDescriptor = OpenForWrite(name);
 
