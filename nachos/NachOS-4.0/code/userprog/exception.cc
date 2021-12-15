@@ -398,8 +398,6 @@ void ExceptionHandlerOpen()
 
 	filename = User2System(virtAddr, MaxFileLength); // Copy filename charArray form userSpace to systemSpace
 
-	printf("check");
-
 	// Check if OS can still open file or not
 	freeSlot = kernel->fileSystem->FindFreeSlot();
 	if (freeSlot == -1) // no free slot found
