@@ -146,14 +146,6 @@ Join:
 	j	$31
 	.end Join
 
-	.globl Create
-	.ent	Create
-Create:
-	addiu $2,$0,SC_Create
-	syscall
-	j	$31
-	.end Create
-
 	.globl CreateFile
 	.ent   CreateFile
 CreateFile:

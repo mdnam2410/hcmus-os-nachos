@@ -28,6 +28,8 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+
+#define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -330,65 +332,168 @@ void ExceptionHandlerPrintChar()
 	kernel->synchConsoleOut->PutChar(c);
 }
 
-void ExceptionHandlerCreate()
-{
-	// Use kernel->fileSystem->Create();
-}
-
-// ??
+// Usage: Create a file with filename
+// Input: address file from user space
+// Output: 0: success, -1: fail
 void ExceptionHandlerCreateFile()
 {
-	// Use kernel->fileSystem->Create();
+	int virtAddr;
+	char *filename;
+
+	// read filename from register r4
+	virtAddr = kernel->machine->ReadRegister(4);
+	// copy from user space to kernel space
+	filename = User2System(virtAddr, MaxFileLength + 1);
+
+	// filename len = 0
+	if (strlen(filename) == 0)
+	{
+		printf("\n File name is not valid");
+		DEBUG('a', "\n File name is not valid");
+		kernel->machine->WriteRegister(2, -1); // fail
+		delete[] filename;
+		return;
+	}
+
+	// can't read filename
+	if (filename == NULL)
+	{
+		printf("\n Not enough memory in system");
+		DEBUG('a', "\n Not enough memory in system");
+		kernel->machine->WriteRegister(2, -1); //  fail
+		delete[] filename;
+		return;
+	}
+	DEBUG('a', "\n Finish reading filename.");
+
+	// fail in create file
+	if (!kernel->fileSystem->Create(filename, 0))
+	{
+		printf("\n Error create file '%s'", filename);
+		DEBUG('a', "\n Error create file '%s'" << filename);
+		kernel->machine->WriteRegister(2, -1); // fail
+		delete[] filename;
+		return;
+	}
+
+	kernel->machine->WriteRegister(2, 0); // success
+	delete[] filename;
 }
 
+// Usage: Open a file
+// Input: arg1: name address, arg2: type
+// type: 0: read and write, 1: read only, 2: stdin, 3: stdout
+// Output: return OpenFileId, if fail then return -1
 void ExceptionHandlerOpen()
 {
-	// kernel->machine->ReadRegister()
+	// OpenFileID Open(char *name, int type)
+	int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
+	int type = kernel->machine->ReadRegister(5);	 // read type from 5th register
+
+	char *filename = User2System(virtAddr, MaxFileLength); // Copy filename charArray form userSpace to systemSpace
+
+	// Check if OS can still open file or not
+	int freeSlot = kernel->fileSystem->FindFreeSlot();
+	if (freeSlot == -1) // no free slot found
+	{
+		printf("\n Full slot in openTable");
+		DEBUG('a', "\n Full slot in openTable");
+		kernel->machine->WriteRegister(2, -1); // write -1 to register r2
+		delete[] filename;
+		return;
+	}
+
+	// Check each type of open file
+	switch (type)
+	{
+	case 0: //  Read and write
+	case 1: //  Read only
+		if ((kernel->fileSystem->openTable[freeSlot] = kernel->fileSystem->Open(filename, type)))
+		{
+			kernel->machine->WriteRegister(2, freeSlot); // success -> write OpenFileID to register r2
+		}
+		else
+		{
+			printf("\n File does not exist");
+			DEBUG('a', "\n File does not exist");
+			kernel->machine->WriteRegister(2, -1); // fail
+			delete[] filename;
+			return;
+		}
+		break;
+	case 2:									  //  stdin - read from console
+		kernel->machine->WriteRegister(2, 0); // stdin have OpenFileID 0
+		break;
+	case 3:									  //  stdout - write to console
+		kernel->machine->WriteRegister(2, 1); // stdout have OpenFileID 1
+		break;
+	default:
+		printf("\nType parameter is not match");
+		DEBUG('a', "\nType parameter is not match");
+		kernel->machine->WriteRegister(2, -1); // fail
+	}
+	delete[] filename;
 }
 
+// Usage: Close a file
+// Input :  id cua file (OpenFileId)
+// Output : success: 0, fail: -1
 void ExceptionHandlerClose()
 {
+	int fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
+	if (fileID >= 0 && fileID < 10)
+	{
+		if (kernel->fileSystem->openTable[fileID])
+		{
+			delete kernel->fileSystem->openTable[fileID]; // delete file space
+			kernel->fileSystem->openTable[fileID] = NULL;
+			kernel->machine->WriteRegister(2, 0); // success
+			return;
+		}
+		else
+		{
+			printf("\n File was not opened");
+			DEBUG('a', "\n File was not opened");
+			kernel->machine->WriteRegister(2, -1); // fail
+			return;
+		}
+	}
 
+	printf("\n FileID is not match");
+	DEBUG('a', "\n FileID is not match");
+	kernel->machine->WriteRegister(2, -1); // fail
 }
 
 void ExceptionHandlerRead()
 {
-
 }
 
 void ExceptionHandlerWrite()
 {
-
 }
 
 void ExceptionHandlerExec()
 {
-
 }
 
 void ExceptionHandlerJoin()
 {
-
 }
 
 void ExceptionHandlerExit()
 {
-
 }
 
 void ExceptionHandlerCreateSemaphore()
 {
-
 }
 
 void ExceptionHandlerWait()
 {
-
 }
 
 void ExceptionHandlerSignal()
 {
-
 }
 
 void ExceptionHandler(ExceptionType which)
@@ -495,9 +600,9 @@ void ExceptionHandler(ExceptionType which)
 			break;
 		}
 
-		case SC_Create:
+		case SC_CreateFile:
 		{
-			ExceptionHandlerCreate();
+			ExceptionHandlerCreateFile();
 			break;
 		}
 
