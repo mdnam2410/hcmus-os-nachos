@@ -30,10 +30,10 @@ STable::~STable()
 	
 }
 
-int STable::create(char *name, int init)
+int STable::Create(char *name, int semVal)
 {
 
-	// Check da ton tai semaphore nay chua?
+	// Check exists semphore
 	for(int i=0; i<MAX_SEMAPHORE; i++)
 	{
 		if(bm->Test(i))
@@ -45,41 +45,42 @@ int STable::create(char *name, int init)
 		}
 		
 	}
-	// Tim slot tren bang semTab trong
+	// find free slot in semTab
 	int id = this->FindFreeSlot();
 	
-	// Neu k tim thay thi tra ve -1
+	// if semTab is full then return -1
 	if(id < 0)
 	{
 		return -1;
 	}
 
-	// Neu tim thay slot trong thi nap Semaphore vao semTab[id]
-	this->semTab[id] = new Sem(name, init);
+    // if find empty slot then load semaphore to semTab[id]
+	this->semTab[id] = new Semaphore(name, semVal);
 	return 0;
 }
 
-int STable::wait(char *name)
+int STable::Wait(char *name)
 {
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
-		// Kiem tra o thu i da duoc nap semaphore chua
+        // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
 			// Neu co thi tien hanh so sanh name voi name cua semaphore trong semTab
+            // if yes then compare nam with name of semaphore in semTab
 			if(strcmp(name, semTab[i]->GetName()) == 0)
 			{
 				// Neu ton tai thi cho semaphore down(); 
-				semTab[i]->wait();
+				semTab[i]->Acquire();
 				return 0;
 			}
 		}
 	}
-	printf("Khong ton tai semaphore");
+	printf("Not exists semaphore");
 	return -1;
 }
 
-int STable::signal(char *name)
+int STable::Signal(char *name)
 {
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
@@ -90,16 +91,16 @@ int STable::signal(char *name)
 			if(strcmp(name, semTab[i]->GetName()) == 0)
 			{
 				// Neu ton tai thi cho semaphore up(); 
-				semTab[i]->signal();
+				semTab[i]->Release();
 				return 0;
 			}
 		}
 	}
-	printf("Khong ton tai semaphore");
+	printf("Not exists semaphore");
 	return -1;
 }
 
-int STable::findFreeSlot()
+int STable::FindFreeSlot()
 {
-	return this->bm->Find();
+	return this->bm->FindAndSet();
 }

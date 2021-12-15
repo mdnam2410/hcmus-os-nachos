@@ -11,9 +11,13 @@
 #include "copyright.h"
 #include "debug.h"
 #include "kernel.h"
+#include "stable.h" 
 
 extern Kernel *kernel;
 extern Debug *debug;
+
+// Add PTable and STable
+extern STable *semTab;
 
 #endif // MAIN_H
 
