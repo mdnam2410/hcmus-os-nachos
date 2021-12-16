@@ -17,6 +17,7 @@
 #include "synchconsole.h"
 #include "synchdisk.h"
 #include "post.h"
+#include "synchcons.h"
 
 //----------------------------------------------------------------------
 // Kernel::Kernel
@@ -116,6 +117,8 @@ void Kernel::Initialize()
     synchConsoleIn = new SynchConsoleInput(consoleIn);    // input from stdin
     synchConsoleOut = new SynchConsoleOutput(consoleOut); // output to stdout
     synchDisk = new SynchDisk();                          //
+    synchCons = new SynchConsole();
+
 #ifdef FILESYS_STUB
     fileSystem = new FileSystem();
 #else
@@ -145,6 +148,7 @@ Kernel::~Kernel()
     delete fileSystem;
     delete postOfficeIn;
     delete postOfficeOut;
+    delete synchCons;
 
     Exit(0);
 }

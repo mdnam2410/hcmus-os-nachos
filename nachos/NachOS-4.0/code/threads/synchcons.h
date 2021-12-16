@@ -1,4 +1,6 @@
 // CAE - MULTI - SYNCHCONSOLE DEFINITION
+#ifndef SYNCHCONS_H
+#define SYNCHCONS_H
 
 #include "console.h"
 
@@ -13,7 +15,9 @@ public:
 										 // Ends in EOLN or ^A
 	int Write(char *from, int numBytes); // Write a synchronous line
 private:
-	Console *cons; // Pointer to an async console
+	ConsoleInput *consIn;	// Pointer to an async console
+	ConsoleOutput *consOut; // Pointer to an async console
 };
 
+#endif
 // CAE - MULTI - END SECTION
