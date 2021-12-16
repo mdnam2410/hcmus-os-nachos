@@ -37,7 +37,7 @@ int STable::Create(char *name, int value)
 	{
 		if(bm->Test(i))
 		{
-			if(strcmp(name, table[i]->getName()) == 0)
+			if(strcmp(name, table[i]->GetName()) == 0)
 			{
 				return -1;
 			}
@@ -48,7 +48,7 @@ int STable::Create(char *name, int value)
 	int id = this->FindFreeSlot();
 	
 	// If table is full then return -1
-	if(id < 0)
+	if (id < 0)
 	{
 		return -1;
 	}
@@ -66,7 +66,7 @@ int STable::Wait(char *name)
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
-			if(strcmp(name, table[i]->getName()) == 0)
+			if(strcmp(name, table[i]->GetName()) == 0)
 			{
                 // If exist then make semaphore down()
 				table[i]->wait();
@@ -86,7 +86,7 @@ int STable::Signal(char *name)
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
-			if(strcmp(name, table[i]->getName()) == 0)
+			if(strcmp(name, table[i]->GetName()) == 0)
 			{
                 // If exist then make semaphore up()
 				table[i]->signal();
