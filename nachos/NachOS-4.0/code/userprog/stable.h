@@ -9,8 +9,8 @@ class STable
 private:
     // Manager empty slot
 	BitMap* bm;
-    // Semaphore manger (10 semaphore)
-	Semaphore* semTab[MAX_SEMAPHORE];
+    // Lock manger (10 semaphore)
+	Lock* lockTab[MAX_SEMAPHORE];
 public:
     // Constructor
     // Create 10 null semephore for semTab
@@ -22,10 +22,10 @@ public:
     // Check semaphor "name" exists then create new semaphor or send error.
 	int Create(char *name);
 
-    // Check semaphor "name" exists then call this->P() to excute or send error.
+    // Check semaphor "name" exists then call this->Acquire() to excute or send error.
 	int Wait(char *name);
 
-    // Check semaphor "name" exists then call this->V() to excute or send error.
+    // Check semaphor "name" exists then call this->Release() to excute or send error.
 	int Signal(char *name);
 	
 	// Find free slot
