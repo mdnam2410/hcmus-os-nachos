@@ -386,53 +386,57 @@ void ExceptionHandlerCreateFile()
 // Output: return OpenFileId, if fail then return -1
 void ExceptionHandlerOpen()
 {
-    // OpenFileID Open(char *name, int type)
-    int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
-    int type = kernel->machine->ReadRegister(5);     // read type from 5th register
+	// save
+	// OpenFileID Open(char *name, int type)
+	int virtAddr;
+	int type;
+	char *filename;
+	int freeSlot;
 
-    char *filename = User2System(virtAddr, MaxFileLength); // Copy filename charArray form userSpace to systemSpace
+	virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
+	type = kernel->machine->ReadRegister(5);	 // read type from 5th register
 
-    // Check if OS can still open file or not
-    int freeSlot = kernel->fileSystem->FindFreeSlot();
-    if (freeSlot == -1) // no free slot found
-    {
-        printf("\n Full slot in openTable");
-        DEBUG('a', "\n Full slot in openTable");
-        kernel->machine->WriteRegister(2, -1); // write -1 to register r2
-        delete[] filename;
-        return;
-    }
+	filename = User2System(virtAddr, MaxFileLength); // Copy filename charArray form userSpace to systemSpace
 
-    // Check each type of open file
-    switch (type)
-    {
-    case 0: //  Read and write
-    case 1: //  Read only
-        if ((kernel->fileSystem->openTable[freeSlot] = kernel->fileSystem->Open(filename, type)))
-        {
-            kernel->machine->WriteRegister(2, freeSlot); // success -> write OpenFileID to register r2
-        }
-        else
-        {
-            printf("\n File does not exist");
-            DEBUG('a', "\n File does not exist");
-            kernel->machine->WriteRegister(2, -1); // fail
-            delete[] filename;
-            return;
-        }
-        break;
-    case 2:                                      //  stdin - read from console
-        kernel->machine->WriteRegister(2, 0); // stdin have OpenFileID 0
-        break;
-    case 3:                                      //  stdout - write to console
-        kernel->machine->WriteRegister(2, 1); // stdout have OpenFileID 1
-        break;
-    default:
-        printf("\nType parameter is not match");
-        DEBUG('a', "\nType parameter is not match");
-        kernel->machine->WriteRegister(2, -1); // fail
-    }
-    delete[] filename;
+	// Check if OS can still open file or not
+	freeSlot = kernel->fileSystem->FindFreeSlot();
+	if (freeSlot == -1) // no free slot found
+	{
+		printf("\n Full slot in openTable");
+		DEBUG('a', "\n Full slot in openTable");
+		kernel->machine->WriteRegister(2, -1); // write -1 to register r2
+		delete[] filename;
+		return;
+	}
+
+	// Check each type of open file
+	switch (type)
+	{
+	case 0: //  Read and write
+	case 1: //  Read only
+		if ((kernel->fileSystem->openTable[freeSlot] = kernel->fileSystem->Open(filename, type)) != NULL)
+		{
+			kernel->machine->WriteRegister(2, freeSlot); // success -> write OpenFileID to register r2
+		}
+		else
+		{
+			printf("\n File does not exist");
+			DEBUG('a', "\n File does not exist");
+			kernel->machine->WriteRegister(2, -1); // fail
+		}
+		break;
+	case 2:									  //  stdin - read from console
+		kernel->machine->WriteRegister(2, 0); // stdin have OpenFileID 0
+		break;
+	case 3:									  //  stdout - write to console
+		kernel->machine->WriteRegister(2, 1); // stdout have OpenFileID 1
+		break;
+	default:
+		printf("\nType parameter is not match");
+		DEBUG('a', "\nType parameter is not match");
+		kernel->machine->WriteRegister(2, -1); // fail
+	}
+	delete[] filename;
 }
 
 // Usage: Close a file
@@ -440,28 +444,30 @@ void ExceptionHandlerOpen()
 // Output : success: 0, fail: -1
 void ExceptionHandlerClose()
 {
-    int fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
-    if (fileID >= 0 && fileID < 10)
-    {
-        if (kernel->fileSystem->openTable[fileID])
-        {
-            delete kernel->fileSystem->openTable[fileID]; // delete file space
-            kernel->fileSystem->openTable[fileID] = NULL;
-            kernel->machine->WriteRegister(2, 0); // success
-            return;
-        }
-        else
-        {
-            printf("\n File was not opened");
-            DEBUG('a', "\n File was not opened");
-            kernel->machine->WriteRegister(2, -1); // fail
-            return;
-        }
-    }
+	int fileID;
 
-    printf("\n FileID is not match");
-    DEBUG('a', "\n FileID is not match");
-    kernel->machine->WriteRegister(2, -1); // fail
+	fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
+	if (fileID >= 0 && fileID < 10)
+	{
+		if (kernel->fileSystem->openTable[fileID])
+		{
+			delete kernel->fileSystem->openTable[fileID]; // delete file space
+			kernel->fileSystem->openTable[fileID] = NULL;
+			kernel->machine->WriteRegister(2, 0); // success
+			return;
+		}
+		else
+		{
+			printf("\n File was not opened");
+			DEBUG('a', "\n File was not opened");
+			kernel->machine->WriteRegister(2, -1); // fail
+			return;
+		}
+	}
+
+	printf("\n FileID is not match");
+	DEBUG('a', "\n FileID is not match");
+	kernel->machine->WriteRegister(2, -1); // fail
 }
 
 void ExceptionHandlerRead()
