@@ -28,6 +28,7 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+#include "stable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
@@ -489,7 +490,6 @@ void ExceptionHandlerExit()
 // Usage: Create a semaphore
 // Input : name of semphore and int for semaphore value
 // Output : success: 0, fail: -1
-// Author: Toan
 void ExceptionHandlerCreateSemaphore()
 {
 	// Load name and value of semaphore
@@ -499,26 +499,26 @@ void ExceptionHandlerCreateSemaphore()
 
 	// Validate name
 	if(name == NULL)
-		{
-			DEBUG('a', "\n Not enough memory in System");
-			printf("\n Not enough memory in System");
-			kernel->machine->WriteRegister(2, -1);
-			delete[] name;
-			return;
-		}
-		
-		int res = semTab->Create(name, semVal);
-
-		// Check error
-		if(res == -1)
-		{
-			DEBUG('a', "\n Can not create semaphore");
-			printf("\n Can not create semaphore");
-		}
-		
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
-		kernel->machine->WriteRegister(2, res);
 		return;
+	}
+	
+	int res = semTab->Create(name, semVal);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Can not create semaphore");
+		printf("\n Can not create semaphore");
+	}
+	
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
 // Usage: Sleep
