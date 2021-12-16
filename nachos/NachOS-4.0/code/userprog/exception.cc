@@ -97,7 +97,6 @@ char *User2System(int virtAddr, int limit)
 // Usage: Copy System memory space to User memory space
 int System2User(int virtAddr, int len, char *buffer)
 {
-
 	if (len < 0)
 		return -1;
 	if (len == 0)
@@ -118,7 +117,6 @@ int System2User(int virtAddr, int len, char *buffer)
 // Usage: Read an Integer from console
 void ExceptionHandlerReadNum()
 {
-
 	// int: [-2147483648 , 2147483647] --> max length = 10 not count char '-'
 	// Handle to not overflow int by not to allow system read more than length of int
 	const int MAX_BUFFER = 255;
@@ -200,7 +198,6 @@ void ExceptionHandlerReadNum()
 // Usage: print an Integer on console
 void ExceptionHandlerPrintNum()
 {
-
 	// read number from register 4
 	int number = kernel->machine->ReadRegister(4);
 
@@ -253,7 +250,6 @@ void ExceptionHandlerPrintNum()
 // Usage: create and return a random number
 void ExceptionHandlerRandomNum()
 {
-
 	srand(time(NULL));
 
 	// random positive number
@@ -490,16 +486,105 @@ void ExceptionHandlerExit()
 {
 }
 
+// Usage: Create a semaphore
+// Input : name of semphore and int for semaphore value
+// Output : success: 0, fail: -1
+// Author: Toan
 void ExceptionHandlerCreateSemaphore()
 {
+	// Load name and value of semaphore
+	int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
+	int semVal = kernel->machine->ReadRegister(5);	 // read type from 5th register
+	char *semName = User2System(virtAddr, MaxFileLength); // Copy semaphore name charArray form userSpace to systemSpace
+
+	// Validate name
+	if(name == NULL)
+		{
+			DEBUG('a', "\n Not enough memory in System");
+			printf("\n Not enough memory in System");
+			machine->WriteRegister(2, -1);
+			delete[] name;
+			return;
+		}
+		
+		int res = semTab->Create(name, semval);
+
+		// Check error
+		if(res == -1)
+		{
+			DEBUG('a', "\n Can not create semaphore");
+			printf("\n Can not create semaphore");
+		}
+		
+		delete[] name;
+		machine->WriteRegister(2, res);
+		return;
 }
 
+// Usage: Sleep
+// Input : name of semaphore
+// Output : success: 0, fail: -1
 void ExceptionHandlerWait()
 {
+	// Load name of semaphore
+	int virtAddr = machine->ReadRegister(4);
+	char *name = User2System(virtAddr, MaxFileLength + 1);
+
+	// Validate name
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	int res = semTab->Wait(name);
+	
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Not exists semaphore");
+		printf("\n Not exists semaphore");
+	}
+
+	delete[] name;
+	machine->WriteRegister(2, res);
+	return;
 }
 
+// Usage: Wake up
+// Input : name of semaphore
+// Output : success: 0, fail: -1
 void ExceptionHandlerSignal()
 {
+	// Load name of semphore
+	int virtAddr = machine->ReadRegister(4);
+	char *name = User2System(virtAddr, MaxFileLength + 1);
+
+	// Validate name
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+	
+	int res = semTab->Signal(name);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Not exists semaphore");
+		printf("\n Not exists semaphore");
+	}
+	
+	delete[] name;
+	machine->WriteRegister(2, res);
+	return;
 }
 
 void ExceptionHandler(ExceptionType which)
