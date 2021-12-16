@@ -22,7 +22,7 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
-#include "ma	in.h"
+#include "main.h"
 #include "syscall.h"
 #include "ksyscall.h"
 #include "synchconsole.h"
@@ -559,7 +559,7 @@ void ExceptionHandlerWait()
 }
 
 // Usage: Wake up
-// Input :  name of semaphore
+// Input : name of semaphore
 // Output : success: 0, fail: -1
 void ExceptionHandlerSignal()
 {
