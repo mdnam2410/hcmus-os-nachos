@@ -302,8 +302,7 @@ main(int argc, char **argv)
     kernel->interrupt->Halt();
     
     ASSERTNOTREACHED();
-#ifndef SYNCH_THREAD
+    // Stable
     semTab = new STable();
-#endif
 }
 

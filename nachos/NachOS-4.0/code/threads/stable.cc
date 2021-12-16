@@ -3,11 +3,11 @@
 // Constructor
 STable::STable()
 {	
-	this->bm = new BitMap(MAX_SEMAPHORE);
+	this->bm = new Bitmap(MAX_SEMAPHORE);
 	
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
-		this->lockTab[i] = NULL;
+		this->table[i] = NULL;
 	}
 }
 
@@ -21,41 +21,40 @@ STable::~STable()
 	}
 	for(int i=0; i < MAX_SEMAPHORE; i++)
 	{
-		if(this->lockTab[i])
+		if(this->table[i])
 		{
-			delete this->lockTab[i];
-			this->lockTab[i] = NULL;
+			delete this->table[i];
+			this->table[i] = NULL;
 		}
 	}
 	
 }
 
-int STable::Create(char *name)
+int STable::Create(char *name, int value)
 {
-
 	// Check exists semphore
 	for(int i=0; i<MAX_SEMAPHORE; i++)
 	{
 		if(bm->Test(i))
 		{
-			if(strcmp(name, lockTab[i]->getName()) == 0)
+			if(strcmp(name, table[i]->getName()) == 0)
 			{
 				return -1;
 			}
 		}
 		
 	}
-	// Find free slot in lockTab
+	// Find free slot in table
 	int id = this->FindFreeSlot();
 	
-	// If lockTab is full then return -1
+	// If table is full then return -1
 	if(id < 0)
 	{
 		return -1;
 	}
 
-    // If find empty slot then load semaphore to lockTab[id]
-	this->lockTab[id] = new Lock(name);
+    // If find empty slot then load semaphore to table[id]
+	this->table[id] = new Sem(name, value);
 	return 0;
 }
 
@@ -66,11 +65,11 @@ int STable::Wait(char *name)
         // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
-            // if yes then compare nam with name of semaphore in lockTab
-			if(strcmp(name, lockTab[i]->getName()) == 0)
+            // if yes then compare nam with name of semaphore in table
+			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore down()
-				lockTab[i]->Acquire();
+				table[i]->wait();
 				return 0;
 			}
 		}
@@ -86,11 +85,11 @@ int STable::Signal(char *name)
         // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
-            // if yes then compare nam with name of semaphore in lockTab
-			if(strcmp(name, lockTab[i]->getName()) == 0)
+            // if yes then compare nam with name of semaphore in table
+			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore up()
-				lockTab[i]->Release();
+				table[i]->signal();
 				return 0;
 			}
 		}

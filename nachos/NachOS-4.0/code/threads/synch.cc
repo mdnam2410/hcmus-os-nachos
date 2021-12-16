@@ -82,8 +82,8 @@ Semaphore::P()
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	
     
     while (value == 0) { 		// semaphore not available
-	queue->Append(currentThread);	// so go to sleep
-	currentThread->Sleep(FALSE);
+		queue->Append(currentThread);	// so go to sleep
+		currentThread->Sleep(FALSE);
     } 
     value--; 			// semaphore available, consume its value
    
@@ -108,7 +108,7 @@ Semaphore::V()
     IntStatus oldLevel = interrupt->SetLevel(IntOff);	
     
     if (!queue->IsEmpty()) {  // make thread ready.
-	kernel->scheduler->ReadyToRun(queue->RemoveFront());
+		kernel->scheduler->ReadyToRun(queue->RemoveFront());
     }
     value++;
     
@@ -142,7 +142,7 @@ Semaphore::SelfTest()
     helper->Fork((VoidFunctionPtr) SelfTestHelper, this);
     for (int i = 0; i < 10; i++) {
         ping->V();
-	this->P();
+		this->P();
     }
     delete ping;
 }
@@ -243,16 +243,16 @@ Condition::~Condition()
 
 void Condition::Wait(Lock* conditionLock) 
 {
-     Semaphore *waiter;
-    
-     ASSERT(conditionLock->IsHeldByCurrentThread());
+    Semaphore *waiter;
 
-     waiter = new Semaphore("condition", 0);
-     waitQueue->Append(waiter);
-     conditionLock->Release();
-     waiter->P();
-     conditionLock->Acquire();
-     delete waiter;
+    ASSERT(conditionLock->IsHeldByCurrentThread());
+
+    waiter = new Semaphore("condition", 0);
+    waitQueue->Append(waiter);
+    conditionLock->Release();
+    waiter->P();
+    conditionLock->Acquire();
+    delete waiter;
 }
 
 //----------------------------------------------------------------------
@@ -278,7 +278,7 @@ void Condition::Signal(Lock* conditionLock)
     
     if (!waitQueue->IsEmpty()) {
         waiter = waitQueue->RemoveFront();
-	waiter->V();
+	    waiter->V();
     }
 }
 
