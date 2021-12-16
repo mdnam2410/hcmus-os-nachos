@@ -45,10 +45,12 @@
 #include "filesys.h"
 #include "openfile.h"
 #include "sysdep.h"
+#include "stable.h" 
 
 // global variables
 Kernel *kernel;
 Debug *debug;
+STable *semTab;
 
 
 //----------------------------------------------------------------------
@@ -300,5 +302,8 @@ main(int argc, char **argv)
     kernel->interrupt->Halt();
     
     ASSERTNOTREACHED();
+#ifndef SYNCH_THREAD
+    semTab = new STable();
+#endif
 }
 

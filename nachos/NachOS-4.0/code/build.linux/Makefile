@@ -191,7 +191,7 @@
 # of "-DSIM_FIX" to the DEFINES.  This should be enabled by default
 # and eventually will not require the symbol definition
 ################################################################
-DEFINES =  -DFILESYS_STUB -DRDATA -DSIM_FIX
+DEFINES =  -DFILESYS_STUB -DRDATA -DSIM_FIX -DSYNCH_THREAD
 
 
 #####################################################################
@@ -270,7 +270,8 @@ THREAD_H = ../threads/alarm.h\
 	../threads/switch.h\
 	../threads/synch.h\
 	../threads/synchlist.h\
-	../threads/thread.h
+	../threads/thread.h\
+	../thread/stable.h
 
 THREAD_C = ../threads/alarm.cc\
 	../threads/kernel.cc\
@@ -278,9 +279,10 @@ THREAD_C = ../threads/alarm.cc\
 	../threads/scheduler.cc\
 	../threads/synch.cc\
 	../threads/synchlist.cc\
-	../threads/thread.cc
+	../threads/thread.cc\
+	../thread/stable.cc
 
-THREAD_O = alarm.o kernel.o main.o scheduler.o synch.o thread.o
+THREAD_O = alarm.o kernel.o main.o scheduler.o synch.o thread.o stable.o
 
 USERPROG_H = ../userprog/addrspace.h\
 	../userprog/syscall.h\
