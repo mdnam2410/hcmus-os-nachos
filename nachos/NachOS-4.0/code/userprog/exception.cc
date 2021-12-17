@@ -29,6 +29,7 @@
 #include "stdint.h"
 #include "time.h"
 #include "stable.h"
+#include "ptable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
@@ -477,6 +478,21 @@ void ExceptionHandlerWrite()
 
 void ExceptionHandlerExec()
 {
+	DEBUG(dbgSys, "Syscall: Exec(filename)");
+
+	int addr = kernel->machine->ReadRegister(4);
+	DEBUG(dbgSys, "Register 4: " << addr);
+
+	char *fileName;
+	fileName = User2System(addr, 255);
+	DEBUG(dbgSys, "Read file name: " << fileName);
+
+	DEBUG(dbgSys, "Scheduling execution...");
+	int result = pTab->ExecUpdate(fileName);
+
+	DEBUG(dbgSys, "Writing result to register 2: " << result);
+	kernel->machine->WriteRegister(2, result);
+	delete fileName;
 }
 
 void ExceptionHandlerJoin()

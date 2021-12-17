@@ -43,16 +43,20 @@
 
 #include "main.h"
 #include "filesys.h"
+#include "machine.h"
 #include "openfile.h"
+#include "ptable.h"
+#include "synch.h"
 #include "sysdep.h"
 #include "stable.h" 
 
 // global variables
 Kernel *kernel;
 Debug *debug;
-STable *semTab;
-
-
+Bitmap *gPhysPageBitMap = new Bitmap(NumPhysPages);
+Semaphore *addrLock = new Semaphore("addrLock", 1);
+PTable *pTab = new PTable;
+STable *semTab = new STable;
 //----------------------------------------------------------------------
 // Cleanup
 //	Delete kernel data structures; called when user hits "ctl-C".
@@ -302,7 +306,5 @@ main(int argc, char **argv)
     kernel->interrupt->Halt();
     
     ASSERTNOTREACHED();
-    // Stable
-    semTab = new STable();
 }
 
