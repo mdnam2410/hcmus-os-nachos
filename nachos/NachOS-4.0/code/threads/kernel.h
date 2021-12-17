@@ -18,14 +18,14 @@
 #include "alarm.h"
 #include "filesys.h"
 #include "machine.h"
-#include "synchcons.h"
+// #include "synchcons.h"
 
 class PostOfficeInput;
 class PostOfficeOutput;
 class SynchConsoleInput;
 class SynchConsoleOutput;
 class SynchDisk;
-class SynchConsole;
+// class SynchConsole;
 
 class Kernel
 {
@@ -59,7 +59,7 @@ public:
   FileSystem *fileSystem;
   PostOfficeInput *postOfficeIn;
   PostOfficeOutput *postOfficeOut;
-  SynchConsole *synchCons;
+  // SynchConsole *synchCons;
 
   int hostName; // machine identifier
 

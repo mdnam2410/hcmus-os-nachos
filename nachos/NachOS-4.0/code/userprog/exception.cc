@@ -518,9 +518,9 @@ void ExceptionHandlerRead()
 	// read from stdin
 	if (kernel->fileSystem->openTable[fileID]->type == 2)
 	{
-		int count = kernel->synchCons->Read(buffer, size); // Transfer data to buffer from console
-		System2User(virtAddr, count, buffer);			   // Copy data buffer to user space
-		kernel->machine->WriteRegister(2, count);		   // success -> write count to register r2
+		int count = kernel->synchConsoleIn->Read(buffer, size); // Transfer data to buffer from console
+		System2User(virtAddr, count, buffer);					// Copy data buffer to user space
+		kernel->machine->WriteRegister(2, count);				// success -> write count to register r2
 	}
 
 	// read from file
@@ -532,7 +532,6 @@ void ExceptionHandlerRead()
 		{
 			System2User(virtAddr, count, buffer);	  // Copy data buffer to user space
 			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
-			printf("\nRead %d bytes from file", count);
 		}
 		else // EOF
 		{
@@ -605,10 +604,10 @@ void ExceptionHandlerWrite()
 		while (buffer[count] != '\0' && count < size) // loop until meet '\0' or out of size
 			count++;
 
-		count = kernel->synchCons->Write(buffer, count); // write data
+		count = kernel->synchConsoleOut->Write(buffer, count); // write data
 		buffer[count] = '\n';
-		kernel->synchCons->Write(buffer + count, 1);  // write '\n'
-		kernel->machine->WriteRegister(2, count - 1); // return real bytes written
+		kernel->synchConsoleOut->Write(buffer + count, 1); // write '\n'
+		kernel->machine->WriteRegister(2, count - 1);	   // return real bytes written
 	}
 
 	// write to file
@@ -619,7 +618,6 @@ void ExceptionHandlerWrite()
 		if (count > 0)
 		{
 			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
-			printf("\nWrite %d bytes to file", count);
 		}
 		else
 		{
