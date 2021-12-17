@@ -1,37 +1,29 @@
 #include "sem.h"
 
-// Class Sem use to manage Semaphore
-class Sem
+// Constructor
+Sem::Sem(char* na, int i)
 {
-private:
-	char name[50];		// Name of semaphore
-	Semaphore* sem;		// Core of sem
-public:
-    // Constructor
-	Sem(char* na, int i)
-	{
-		strcpy(this->name, na);
-		sem = new Semaphore(this->name, i);
-	}
+	strcpy(this->name, na);
+	sem = new Semaphore(this->name, i);
+}
 
-	~Sem()
-	{
-		if(sem)
-			delete sem;
-	}
+Sem::~Sem()
+{
+	if(sem)
+		delete sem;
+}
 
-	void wait()
-	{
-		sem->P();	// Down(sem)
-	}
+void Sem::wait()
+{
+	sem->P();	// Down(sem)
+}
 
-	void signal()
-	{
-		sem->V();	// Up(sem)
-	}
-	
-	char* GetName()
-	{
-		return this->name;
-	}
-};
+void Sem::signal()
+{
+	sem->V();	// Up(sem)
+}
+
+char* Sem::GetName()
+{
+	return this->name;
+}
