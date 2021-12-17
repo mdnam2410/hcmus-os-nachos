@@ -26,8 +26,8 @@ static void SynchWriteFunct(int arg) { synchWriteAvail->V(); }
 
 SynchConsole::SynchConsole()
 {
-	consIn = new ConsoleInput(NULL, NULL);
-	consOut = new ConsoleOutput(NULL, NULL);
+	consIn = new ConsoleInput(NULL, this);
+	consOut = new ConsoleOutput(NULL, this);
 	synchReadAvail = new Semaphore("Synch Read Avail", 0);
 	synchWriteAvail = new Semaphore("Synch Write Avail", 0);
 	RLineBlock = new Semaphore("Read Synch Line Block", 1);
@@ -41,8 +41,8 @@ SynchConsole::SynchConsole()
 
 SynchConsole::SynchConsole(char *in, char *out)
 {
-	consIn = new ConsoleInput(in, NULL);
-	consOut = new ConsoleOutput(out, NULL);
+	consIn = new ConsoleInput(in, this);
+	consOut = new ConsoleOutput(out, this);
 	synchReadAvail = new Semaphore("Synch Read Avail", 0);
 	synchWriteAvail = new Semaphore("Synch Write Avail", 0);
 	RLineBlock = new Semaphore("Read Synch Line Block", 1);
@@ -134,6 +134,12 @@ int SynchConsole::Read(char *into, int numBytes)
 		return -1;	  // For end of stream
 	else
 		return loop; // How many did we rd
+}
+
+void SynchConsole::CallBack()
+{
+	synchReadAvail->V();
+	synchWriteAvail->V();
 }
 
 // CAE - MULTI - END SECTION

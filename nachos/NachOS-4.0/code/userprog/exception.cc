@@ -532,6 +532,7 @@ void ExceptionHandlerRead()
 		{
 			System2User(virtAddr, count, buffer);	  // Copy data buffer to user space
 			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
+			printf("\nRead %d bytes from file", count);
 		}
 		else // EOF
 		{
@@ -618,6 +619,7 @@ void ExceptionHandlerWrite()
 		if (count > 0)
 		{
 			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
+			printf("\nWrite %d bytes to file", count);
 		}
 		else
 		{
