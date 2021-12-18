@@ -39,4 +39,4 @@ nachos/NachOS-4.0/code/build.linux/DISK_0
 nachos/NachOS-4.0/code/build.linux/Makefile.dep
 
 # Visual Studio Code
-.vscode
+.vscode/
