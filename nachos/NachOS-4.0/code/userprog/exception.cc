@@ -497,10 +497,17 @@ void ExceptionHandlerExec()
 
 void ExceptionHandlerJoin()
 {
+	DEBUG(dbgSys, "Syscall: Join");
+	int id = kernel->machine->ReadRegister(4);
+	int result = pTab->JoinUpdate(id);
+	kernel->machine->WriteRegister(2, result);
 }
 
 void ExceptionHandlerExit()
 {
+	DEBUG(dbgSys, "Syscall: Exit");
+	int exitCode = kernel->machine->ReadRegister(4);
+	int result = pTab->ExitUpdate(exitCode);
 }
 
 // Usage: Create a semaphore
