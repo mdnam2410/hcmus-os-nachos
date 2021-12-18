@@ -56,6 +56,7 @@ Debug *debug;
 Bitmap *gPhysPageBitMap = new Bitmap(NumPhysPages);
 Semaphore *addrLock = new Semaphore("addrLock", 1);
 PTable *pTab = new PTable;
+STable *semTab = new STable;
 //----------------------------------------------------------------------
 // Cleanup
 //	Delete kernel data structures; called when user hits "ctl-C".
@@ -305,8 +306,5 @@ main(int argc, char **argv)
     kernel->interrupt->Halt();
     
     ASSERTNOTREACHED();
-#ifndef SYNCH_THREAD
-    semTab = new STable();
-#endif
 }
 

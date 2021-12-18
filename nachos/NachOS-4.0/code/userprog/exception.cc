@@ -28,6 +28,7 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+#include "stable.h"
 #include "ptable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
@@ -505,36 +506,35 @@ void ExceptionHandlerExit()
 // Usage: Create a semaphore
 // Input : name of semphore and int for semaphore value
 // Output : success: 0, fail: -1
-// Author: Toan
 void ExceptionHandlerCreateSemaphore()
 {
 	// Load name and value of semaphore
 	int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
 	int semVal = kernel->machine->ReadRegister(5);	 // read type from 5th register
-	char *semName = User2System(virtAddr, MaxFileLength); // Copy semaphore name charArray form userSpace to systemSpace
+	char *name = User2System(virtAddr, MaxFileLength); // Copy semaphore name charArray form userSpace to systemSpace
 
 	// Validate name
 	if(name == NULL)
-		{
-			DEBUG('a', "\n Not enough memory in System");
-			printf("\n Not enough memory in System");
-			machine->WriteRegister(2, -1);
-			delete[] name;
-			return;
-		}
-		
-		int res = semTab->Create(name, semval);
-
-		// Check error
-		if(res == -1)
-		{
-			DEBUG('a', "\n Can not create semaphore");
-			printf("\n Can not create semaphore");
-		}
-		
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
-		machine->WriteRegister(2, res);
 		return;
+	}
+	
+	int res = semTab->Create(name, semVal);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Can not create semaphore");
+		printf("\n Can not create semaphore");
+	}
+	
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
 // Usage: Sleep
@@ -543,7 +543,7 @@ void ExceptionHandlerCreateSemaphore()
 void ExceptionHandlerWait()
 {
 	// Load name of semaphore
-	int virtAddr = machine->ReadRegister(4);
+	int virtAddr = kernel->machine->ReadRegister(4);
 	char *name = User2System(virtAddr, MaxFileLength + 1);
 
 	// Validate name
@@ -551,7 +551,7 @@ void ExceptionHandlerWait()
 	{
 		DEBUG('a', "\n Not enough memory in System");
 		printf("\n Not enough memory in System");
-		machine->WriteRegister(2, -1);
+		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
 		return;
 	}
@@ -566,7 +566,7 @@ void ExceptionHandlerWait()
 	}
 
 	delete[] name;
-	machine->WriteRegister(2, res);
+	kernel->machine->WriteRegister(2, res);
 	return;
 }
 
@@ -576,7 +576,7 @@ void ExceptionHandlerWait()
 void ExceptionHandlerSignal()
 {
 	// Load name of semphore
-	int virtAddr = machine->ReadRegister(4);
+	int virtAddr = kernel->machine->ReadRegister(4);
 	char *name = User2System(virtAddr, MaxFileLength + 1);
 
 	// Validate name
@@ -584,7 +584,7 @@ void ExceptionHandlerSignal()
 	{
 		DEBUG('a', "\n Not enough memory in System");
 		printf("\n Not enough memory in System");
-		machine->WriteRegister(2, -1);
+		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
 		return;
 	}
@@ -599,7 +599,7 @@ void ExceptionHandlerSignal()
 	}
 	
 	delete[] name;
-	machine->WriteRegister(2, res);
+	kernel->machine->WriteRegister(2, res);
 	return;
 }
 

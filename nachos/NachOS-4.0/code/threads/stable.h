@@ -8,9 +8,9 @@ class STable
 {
 private:
     // Manager empty slot
-	BitMap* bm;
+	Bitmap* bm;
     // Lock manger (10 semaphore)
-	Lock* lockTab[MAX_SEMAPHORE];
+	Semaphore* table[MAX_SEMAPHORE];
 public:
     // Constructor
     // Create 10 null semephore for semTab
@@ -20,7 +20,7 @@ public:
     // Destructor
 	~STable();
     // Check semaphor "name" exists then create new semaphor or send error.
-	int Create(char *name);
+	int Create(char *name, int value);
 
     // Check semaphor "name" exists then call this->Acquire() to excute or send error.
 	int Wait(char *name);
