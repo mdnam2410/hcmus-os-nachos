@@ -28,6 +28,7 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+#include "ptable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
