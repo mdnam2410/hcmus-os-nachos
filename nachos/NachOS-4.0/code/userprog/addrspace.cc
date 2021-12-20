@@ -365,7 +365,3 @@ AddrSpace::Translate(unsigned int vaddr, unsigned int *paddr, int isReadWrite)
 
     return NoException;
 }
-
-
-
-
