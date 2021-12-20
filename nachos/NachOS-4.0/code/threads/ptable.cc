@@ -134,11 +134,11 @@ int PTable::JoinUpdate(int id)
         return -3;
     }
 
-    _pcbs[id]->IncNumWait();
+    _pcbs[currentThreadId]->IncNumWait();
     _pcbs[id]->JoinWait();
 
-    _pcbs[id]->DecNumWait();
-    _pcbs[id]->ExitRelease(); // ???
+    _pcbs[currentThreadId]->DecNumWait();
+    _pcbs[id]->ExitRelease();
     return _pcbs[id]->GetExitCode();
 }
 
