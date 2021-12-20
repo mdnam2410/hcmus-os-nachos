@@ -1,7 +1,8 @@
 #include "syscall.h"
 
 int main() {
-    char s[] = "Hello, world!\n";
-    PrintString(s);
-    Halt();
+    PrintString("printstring is starting\n");
+    PrintString("hello\n");
+    PrintString("printstring is exiting with exit code: 0\n");
+    Exit(0);
 }

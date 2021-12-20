@@ -28,6 +28,8 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+#include "stable.h"
+#include "ptable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
@@ -626,22 +628,52 @@ void ExceptionHandlerWrite()
 	delete[] buffer;
 }
 
+// Usage: create a process from a program and schedule it for execution
+// Input: address to the program name
+// Output: the process ID, or -1 on failure
 void ExceptionHandlerExec()
 {
+	DEBUG(dbgSys, "Syscall: Exec(filename)");
+
+	int addr = kernel->machine->ReadRegister(4);
+	DEBUG(dbgSys, "Register 4: " << addr);
+
+	char *fileName;
+	fileName = User2System(addr, 255);
+	DEBUG(dbgSys, "Read file name: " << fileName);
+
+	DEBUG(dbgSys, "Scheduling execution...");
+	int result = pTab->ExecUpdate(fileName);
+
+	DEBUG(dbgSys, "Writing result to register 2: " << result);
+	kernel->machine->WriteRegister(2, result);
+	delete fileName;
 }
 
+// Usage: block the current thread until the child thread has exited
+// Input: ID of the thread being joined
+// Output: exit code of the thread
 void ExceptionHandlerJoin()
 {
+	DEBUG(dbgSys, "Syscall: Join");
+	int id = kernel->machine->ReadRegister(4);
+	int result = pTab->JoinUpdate(id);
+	kernel->machine->WriteRegister(2, result);
 }
 
+// Usage: exit current thread
+// Input: exit code to pass to parent
+// Output: none
 void ExceptionHandlerExit()
 {
+	DEBUG(dbgSys, "Syscall: Exit");
+	int exitCode = kernel->machine->ReadRegister(4);
+	int result = pTab->ExitUpdate(exitCode);
 }
 
 // Usage: Create a semaphore
 // Input : name of semphore and int for semaphore value
 // Output : success: 0, fail: -1
-// Author: Toan
 void ExceptionHandlerCreateSemaphore()
 {
 	// Load name and value of semaphore
@@ -651,26 +683,26 @@ void ExceptionHandlerCreateSemaphore()
 
 	// Validate name
 	if(name == NULL)
-		{
-			DEBUG('a', "\n Not enough memory in System");
-			printf("\n Not enough memory in System");
-			kernel->machine->WriteRegister(2, -1);
-			delete[] name;
-			return;
-		}
-		
-		int res = semTab->Create(name, semVal);
-
-		// Check error
-		if(res == -1)
-		{
-			DEBUG('a', "\n Can not create semaphore");
-			printf("\n Can not create semaphore");
-		}
-		
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
-		kernel->machine->WriteRegister(2, res);
 		return;
+	}
+	
+	int res = semTab->Create(name, semVal);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Can not create semaphore");
+		printf("\n Can not create semaphore");
+	}
+	
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
 // Usage: Sleep
