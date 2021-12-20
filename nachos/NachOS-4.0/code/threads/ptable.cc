@@ -95,7 +95,10 @@ int PTable::ExecUpdate(char *fileName)
     _pcbs[slot] = new PCB();
     _pcbs[slot]->parentID = currentThreadId;
     
+    // Schedule the program for execution
+    DEBUG(dbgThread, "PTable: Scheduling program for execution...");
     int result = _pcbs[slot]->Exec(fileName, slot);
+    ++_num_processes;
     _sem->V();
     return result;
 }
