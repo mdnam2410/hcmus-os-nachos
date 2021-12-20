@@ -28,6 +28,8 @@
 #include "synchconsole.h"
 #include "stdint.h"
 #include "time.h"
+#include "stable.h"
+#include "ptable.h"
 
 #define MaxFileLength 32 // Maximum length of a file name
 //----------------------------------------------------------------------
@@ -97,7 +99,6 @@ char *User2System(int virtAddr, int limit)
 // Usage: Copy System memory space to User memory space
 int System2User(int virtAddr, int len, char *buffer)
 {
-
 	if (len < 0)
 		return -1;
 	if (len == 0)
@@ -118,7 +119,6 @@ int System2User(int virtAddr, int len, char *buffer)
 // Usage: Read an Integer from console
 void ExceptionHandlerReadNum()
 {
-
 	// int: [-2147483648 , 2147483647] --> max length = 10 not count char '-'
 	// Handle to not overflow int by not to allow system read more than length of int
 	const int MAX_BUFFER = 255;
@@ -200,7 +200,6 @@ void ExceptionHandlerReadNum()
 // Usage: print an Integer on console
 void ExceptionHandlerPrintNum()
 {
-
 	// read number from register 4
 	int number = kernel->machine->ReadRegister(4);
 
@@ -253,7 +252,6 @@ void ExceptionHandlerPrintNum()
 // Usage: create and return a random number
 void ExceptionHandlerRandomNum()
 {
-
 	srand(time(NULL));
 
 	// random positive number
@@ -337,6 +335,7 @@ void ExceptionHandlerPrintChar()
 // Output: 0: success, -1: fail
 void ExceptionHandlerCreateFile()
 {
+	// int CreateFile(char* filename)
 	int virtAddr;
 	char *filename;
 
@@ -348,8 +347,8 @@ void ExceptionHandlerCreateFile()
 	// filename len = 0
 	if (strlen(filename) == 0)
 	{
-		printf("\n File name is not valid");
-		DEBUG('a', "\n File name is not valid");
+		printf("\nFile name is not valid");
+		DEBUG('a', "\nFile name is not valid");
 		kernel->machine->WriteRegister(2, -1); // fail
 		delete[] filename;
 		return;
@@ -358,19 +357,19 @@ void ExceptionHandlerCreateFile()
 	// can't read filename
 	if (filename == NULL)
 	{
-		printf("\n Not enough memory in system");
-		DEBUG('a', "\n Not enough memory in system");
+		printf("\nNot enough memory in system");
+		DEBUG('a', "\nNot enough memory in system");
 		kernel->machine->WriteRegister(2, -1); //  fail
 		delete[] filename;
 		return;
 	}
-	DEBUG('a', "\n Finish reading filename.");
+	// DEBUG('a', "\nFinish reading filename.");
 
 	// fail in create file
 	if (!kernel->fileSystem->Create(filename, 0))
 	{
-		printf("\n Error create file '%s'", filename);
-		DEBUG('a', "\n Error create file '%s'" << filename);
+		printf("\nError create file '%s'", filename);
+		DEBUG('a', "\nError create file '%s'" << filename);
 		kernel->machine->WriteRegister(2, -1); // fail
 		delete[] filename;
 		return;
@@ -381,12 +380,11 @@ void ExceptionHandlerCreateFile()
 }
 
 // Usage: Open a file
-// Input: arg1: name address, arg2: type
-// type: 0: read and write, 1: read only, 2: stdin, 3: stdout
+// Input: 	arg1: name address,
+//			arg2: type -> 0: read and write, 1: read only, 2: stdin, 3: stdout
 // Output: return OpenFileId, if fail then return -1
 void ExceptionHandlerOpen()
 {
-	// save
 	// OpenFileID Open(char *name, int type)
 	int virtAddr;
 	int type;
@@ -402,8 +400,8 @@ void ExceptionHandlerOpen()
 	freeSlot = kernel->fileSystem->FindFreeSlot();
 	if (freeSlot == -1) // no free slot found
 	{
-		printf("\n Full slot in openTable");
-		DEBUG('a', "\n Full slot in openTable");
+		printf("\nFull slot in openTable");
+		DEBUG('a', "\nFull slot in openTable");
 		kernel->machine->WriteRegister(2, -1); // write -1 to register r2
 		delete[] filename;
 		return;
@@ -414,14 +412,14 @@ void ExceptionHandlerOpen()
 	{
 	case 0: //  Read and write
 	case 1: //  Read only
-		if ((kernel->fileSystem->openTable[freeSlot] = kernel->fileSystem->Open(filename, type)) != NULL)
+		if ((kernel->fileSystem->openTable[freeSlot] = kernel->fileSystem->Open(filename, type)))
 		{
 			kernel->machine->WriteRegister(2, freeSlot); // success -> write OpenFileID to register r2
 		}
 		else
 		{
-			printf("\n File does not exist");
-			DEBUG('a', "\n File does not exist");
+			printf("\nFile does not exist");
+			DEBUG('a', "\nFile does not exist");
 			kernel->machine->WriteRegister(2, -1); // fail
 		}
 		break;
@@ -432,18 +430,19 @@ void ExceptionHandlerOpen()
 		kernel->machine->WriteRegister(2, 1); // stdout have OpenFileID 1
 		break;
 	default:
-		printf("\nType parameter is not match");
-		DEBUG('a', "\nType parameter is not match");
+		printf("\nType is not match");
+		DEBUG('a', "\nType is not match");
 		kernel->machine->WriteRegister(2, -1); // fail
 	}
 	delete[] filename;
 }
 
 // Usage: Close a file
-// Input :  id cua file (OpenFileId)
+// Input :  id of file (OpenFileId)
 // Output : success: 0, fail: -1
 void ExceptionHandlerClose()
 {
+	// int Close(OpenFileID id)
 	int fileID;
 
 	fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
@@ -458,48 +457,318 @@ void ExceptionHandlerClose()
 		}
 		else
 		{
-			printf("\n File was not opened");
-			DEBUG('a', "\n File was not opened");
+			printf("\nFile does not exist");
+			DEBUG('a', "\nFile does not exist");
 			kernel->machine->WriteRegister(2, -1); // fail
 			return;
 		}
 	}
 
-	printf("\n FileID is not match");
-	DEBUG('a', "\n FileID is not match");
+	printf("\nFileID is not match");
+	DEBUG('a', "\nFile is not match");
 	kernel->machine->WriteRegister(2, -1); // fail
 }
 
+// Usage: Read from file
+// Input :  buffer address, number of bytes to read, fileID
+// Output : success: number of bytes read, fail: -1, EOF: -2
 void ExceptionHandlerRead()
 {
+	// int Read(char *buffer, int size, OpenFileId id);
+	int virtAddr;
+	int size;
+	int fileID;
+	char *buffer;
+
+	virtAddr = kernel->machine->ReadRegister(4); // read buffer address from register r4
+	size = kernel->machine->ReadRegister(5);	 // read size from register r5
+	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
+
+	// fileID is not match
+	if (fileID < 0 || fileID > 10)
+	{
+		printf("\nFileID is not match");
+		DEBUG('a', "\nFileID is not match");
+		kernel->machine->WriteRegister(2, -1); // fail
+		return;
+	}
+
+	// fileID does not exist
+	if (kernel->fileSystem->openTable[fileID] == NULL)
+	{
+		printf("\nFileID does not exist");
+		DEBUG('a', "\nFileID does not exist");
+		kernel->machine->WriteRegister(2, -1); // fail
+		return;
+	}
+
+	// read from stdout
+	if (kernel->fileSystem->openTable[fileID]->type == 3)
+	{
+		printf("\nCannot read from stdout");
+		DEBUG('a', "\nCannot read from stdout");
+		kernel->machine->WriteRegister(2, -1); // fail
+		return;
+	}
+
+	buffer = User2System(virtAddr, size); // Copy buffer form user space to system space
+
+	// read from stdin
+	if (kernel->fileSystem->openTable[fileID]->type == 2)
+	{
+		int count = kernel->synchConsoleIn->Read(buffer, size); // Transfer data to buffer from console
+		System2User(virtAddr, count, buffer);					// Copy data buffer to user space
+		kernel->machine->WriteRegister(2, count);				// success -> write count to register r2
+	}
+
+	// read from file
+	// file only read or read and write
+	else if (kernel->fileSystem->openTable[fileID]->type == 0 || kernel->fileSystem->openTable[fileID]->type == 1)
+	{
+		int count = kernel->fileSystem->openTable[fileID]->Read(buffer, size);
+		if (count > 0)
+		{
+			System2User(virtAddr, count, buffer);	  // Copy data buffer to user space
+			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
+		}
+		else // EOF
+		{
+			printf("\nEOF");
+			DEBUG('a', "\nEOF");
+			kernel->machine->WriteRegister(2, -2);
+		}
+	}
+
+	delete[] buffer;
 }
 
+// Usage: Write to file
+// Input :  buffer address, number of bytes to write, fileID
+// Output : success: number of bytes written, fail: -1
 void ExceptionHandlerWrite()
 {
+	// int Write(char *buffer, int size, OpenFileId id)
+	int virtAddr;
+	int size;
+	int fileID;
+	char *buffer;
+
+	virtAddr = kernel->machine->ReadRegister(4); // read buffer address from register r4
+	size = kernel->machine->ReadRegister(5);	 // read size from register r5
+	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
+
+	// fileId is not match
+	if (fileID < 0 || fileID > 10)
+	{
+		printf("\nFileID is not match");
+		DEBUG('a', "\nFileID is not match");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// fileId does not exist
+	if (kernel->fileSystem->openTable[fileID] == NULL)
+	{
+		printf("\nFileID does not exist");
+		DEBUG('a', "\nFileID does not exist");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// write to read-only file
+	if (kernel->fileSystem->openTable[fileID]->type == 1)
+	{
+		printf("\nCannot write to read-only file");
+		DEBUG('a', "\nCannot write to read-only file");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// write to stdin
+	if (kernel->fileSystem->openTable[fileID]->type == 2)
+	{
+		printf("\nCannot write to stdin");
+		DEBUG('a', "\nCannot write to stdin");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	buffer = User2System(virtAddr, size); // Copy buffer form user space to system space
+
+	// write to stdout
+	if (kernel->fileSystem->openTable[fileID]->type == 3)
+	{
+		int count = 0;
+		while (buffer[count] != '\0' && count < size) // loop until meet '\0' or out of size
+			count++;
+
+		count = kernel->synchConsoleOut->Write(buffer, count); // write data
+		buffer[count] = '\n';
+		kernel->synchConsoleOut->Write(buffer + count, 1); // write '\n'
+		kernel->machine->WriteRegister(2, count - 1);	   // return real bytes written
+	}
+
+	// write to file
+	else if (kernel->fileSystem->openTable[fileID]->type == 0)
+	{
+		int count = kernel->fileSystem->openTable[fileID]->Write(buffer, size);
+
+		if (count > 0)
+		{
+			kernel->machine->WriteRegister(2, count); // success -> write count to register r2
+		}
+		else
+		{
+			printf("\nWrite fail");
+			DEBUG('a', "\nWrite fail");
+			kernel->machine->WriteRegister(2, -1);
+		}
+	}
+
+	delete[] buffer;
 }
 
+// Usage: create a process from a program and schedule it for execution
+// Input: address to the program name
+// Output: the process ID, or -1 on failure
 void ExceptionHandlerExec()
 {
+	DEBUG(dbgSys, "Syscall: Exec(filename)");
+
+	int addr = kernel->machine->ReadRegister(4);
+	DEBUG(dbgSys, "Register 4: " << addr);
+
+	char *fileName;
+	fileName = User2System(addr, 255);
+	DEBUG(dbgSys, "Read file name: " << fileName);
+
+	DEBUG(dbgSys, "Scheduling execution...");
+	int result = pTab->ExecUpdate(fileName);
+
+	DEBUG(dbgSys, "Writing result to register 2: " << result);
+	kernel->machine->WriteRegister(2, result);
+	delete fileName;
 }
 
+// Usage: block the current thread until the child thread has exited
+// Input: ID of the thread being joined
+// Output: exit code of the thread
 void ExceptionHandlerJoin()
 {
+	DEBUG(dbgSys, "Syscall: Join");
+	int id = kernel->machine->ReadRegister(4);
+	int result = pTab->JoinUpdate(id);
+	kernel->machine->WriteRegister(2, result);
 }
 
+// Usage: exit current thread
+// Input: exit code to pass to parent
+// Output: none
 void ExceptionHandlerExit()
 {
+	DEBUG(dbgSys, "Syscall: Exit");
+	int exitCode = kernel->machine->ReadRegister(4);
+	int result = pTab->ExitUpdate(exitCode);
 }
 
+// Usage: Create a semaphore
+// Input : name of semphore and int for semaphore value
+// Output : success: 0, fail: -1
 void ExceptionHandlerCreateSemaphore()
 {
+	// Load name and value of semaphore
+	int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
+	int semVal = kernel->machine->ReadRegister(5);	 // read type from 5th register
+	char *name = User2System(virtAddr, MaxFileLength); // Copy semaphore name charArray form userSpace to systemSpace
+
+	// Validate name
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+	
+	int res = semTab->Create(name, semVal);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Can not create semaphore");
+		printf("\n Can not create semaphore");
+	}
+	
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
+// Usage: Sleep
+// Input : name of semaphore
+// Output : success: 0, fail: -1
 void ExceptionHandlerWait()
 {
+	// Load name of semaphore
+	int virtAddr = kernel->machine->ReadRegister(4);
+	char *name = User2System(virtAddr, MaxFileLength + 1);
+
+	// Validate name
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	int res = semTab->Wait(name);
+	
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Not exists semaphore");
+		printf("\n Not exists semaphore");
+	}
+
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
+// Usage: Wake up
+// Input : name of semaphore
+// Output : success: 0, fail: -1
 void ExceptionHandlerSignal()
 {
+	// Load name of semphore
+	int virtAddr = kernel->machine->ReadRegister(4);
+	char *name = User2System(virtAddr, MaxFileLength + 1);
+
+	// Validate name
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		kernel->machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+	
+	int res = semTab->Signal(name);
+
+	// Check error
+	if(res == -1)
+	{
+		DEBUG('a', "\n Not exists semaphore");
+		printf("\n Not exists semaphore");
+	}
+	
+	delete[] name;
+	kernel->machine->WriteRegister(2, res);
+	return;
 }
 
 void ExceptionHandler(ExceptionType which)
@@ -511,44 +780,44 @@ void ExceptionHandler(ExceptionType which)
 	case NoException:
 		return;
 	case PageFaultException:
-		DEBUG('a', "\n Unexpected user mode exception PageFaultException");
-		printf("\n\n Unexpected user mode exception PageFaultException");
+		DEBUG('a', "\nUnexpected user mode exception PageFaultException");
+		printf("\n\nUnexpected user mode exception PageFaultException");
 		kernel->interrupt->Halt();
 		break;
 
 	case ReadOnlyException:
-		DEBUG('a', "\n Unexpected user mode exception ReadOnlyException");
-		printf("\n\n Unexpected user mode exception ReadOnlyException");
+		DEBUG('a', "\nUnexpected user mode exception ReadOnlyException");
+		printf("\n\nUnexpected user mode exception ReadOnlyException");
 		kernel->interrupt->Halt();
 		break;
 
 	case BusErrorException:
-		DEBUG('a', "\n Unexpected user mode exception BusErrorException");
-		printf("\n\n Unexpected user mode exception BusErrorException");
+		DEBUG('a', "\nUnexpected user mode exception BusErrorException");
+		printf("\n\nUnexpected user mode exception BusErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case AddressErrorException:
-		DEBUG('a', "\n Unexpected user mode exception AddressErrorException");
-		printf("\n\n Unexpected user mode exception AddressErrorException");
+		DEBUG('a', "\nUnexpected user mode exception AddressErrorException");
+		printf("\n\nUnexpected user mode exception AddressErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case OverflowException:
-		DEBUG('a', "\n Unexpected user mode exception OverflowException");
-		printf("\n\n Unexpected user mode exception OverflowException");
+		DEBUG('a', "\nUnexpected user mode exception OverflowException");
+		printf("\n\nUnexpected user mode exception OverflowException");
 		kernel->interrupt->Halt();
 		break;
 
 	case IllegalInstrException:
-		DEBUG('a', "\n Unexpected user mode exception IllegalInstrException");
-		printf("\n\n Unexpected user mode exception IllegalInstrException");
+		DEBUG('a', "\nUnexpected user mode exception IllegalInstrException");
+		printf("\n\nUnexpected user mode exception IllegalInstrException");
 		kernel->interrupt->Halt();
 		break;
 
 	case NumExceptionTypes:
-		DEBUG('a', "\n Unexpected user mode exception NumExceptionTypes");
-		printf("\n\n Unexpected user mode exception NumExceptionTypes");
+		DEBUG('a', "\nUnexpected user mode exception NumExceptionTypes");
+		printf("\n\nUnexpected user mode exception NumExceptionTypes");
 		kernel->interrupt->Halt();
 		break;
 

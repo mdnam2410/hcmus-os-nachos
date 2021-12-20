@@ -8,12 +8,25 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "bitmap.h"
 #include "copyright.h"
 #include "debug.h"
 #include "kernel.h"
 
 extern Kernel *kernel;
 extern Debug *debug;
+
+class Bitmap;
+class Semaphore;
+class PTable;
+class STable;
+// Bitmap data structure for managing physical memory pages
+extern Bitmap *gPhysPageBitMap;
+extern Semaphore *addrLock;
+
+// Data structure for managing PCBs
+extern PTable *pTab;
+extern STable *semTab;
 
 #endif // MAIN_H
 

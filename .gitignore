@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# build
+nachos/NachOS-4.0/code/build.linux/stdout
+nachos/NachOS-4.0/code/build.linux/stdin
+nachos/NachOS-4.0/code/build.linux/nachos
+nachos/NachOS-4.0/code/build.linux/DISK_0
+nachos/NachOS-4.0/code/build.linux/Makefile.dep
+
+# Visual Studio Code
+.vscode/
