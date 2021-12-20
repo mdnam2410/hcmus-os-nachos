@@ -112,10 +112,10 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join
+PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join SvVn sinhvien voinuoc
 endif
 
-all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join
+all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join SvVn sinhvien voinuoc
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
@@ -239,6 +239,24 @@ join.o: join.c
 join: join.o start.o
 	$(LD) $(LDFLAGS) start.o join.o -o join.coff
 	$(COFF2NOFF) join.coff join
+
+SvVn.o: SvVn.c
+	$(CC) $(CFLAGS) -c SvVn.c
+SvVn: SvVn.o start.o
+	$(LD) $(LDFLAGS) start.o SvVn.o -o SvVn.coff
+	$(COFF2NOFF) SvVn.coff SvVn
+
+voinuoc.o: voinuoc.c
+	$(CC) $(CFLAGS) -c voinuoc.c
+voinuoc: voinuoc.o start.o
+	$(LD) $(LDFLAGS) start.o voinuoc.o -o voinuoc.coff
+	$(COFF2NOFF) voinuoc.coff voinuoc
+
+sinhvien.o: sinhvien.c
+	$(CC) $(CFLAGS) -c sinhvien.c
+sinhvien: sinhvien.o start.o
+	$(LD) $(LDFLAGS) start.o sinhvien.o -o sinhvien.coff
+	$(COFF2NOFF) sinhvien.coff sinhvien
 
 clean:
 	$(RM) -f *.o *.ii

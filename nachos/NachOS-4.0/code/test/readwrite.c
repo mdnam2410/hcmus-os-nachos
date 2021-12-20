@@ -1,46 +1,66 @@
 #include "syscall.h"
-#define MAX_LENGTH 255
+#define MAX_LENGTH 32
 
 int main()
 {
+    // OpenFileId cua file nguon va file dich
+    int srcFileId;
+    int destFileId;
+    // Do dai file
+    int fileSize;
+    int i;  // Index for loop
+    char c; // Ky tu de in ra
+    char source[MAX_LENGTH];
+    char dest[MAX_LENGTH];
 
-    int stdin;
-    int stdout;
-    char buffer[MAX_LENGTH];
-    int len;
-    // PrintString("\n\t\t\t-----ECHO TRONG NACHOS-----\n\n");
-    // PrintString(" - input file: ");
+    PrintString("\n\t\t\t-----SAO CHEP FILE-----\n\n");
+    // PrintString(" - Nhap ten file nguon: ");
+    // ReadString(source, MAX_LENGTH); // Goi ham ReadString de doc vao ten file nguon
 
-    // Goi ham Open de mo file stdin
-    stdin = Open("test.txt", 1);
-    if (stdin != -1)
+    // PrintString(source);
+
+    // PrintString(" - Nhap ten file dich: ");
+    // ReadString(dest, MAX_LENGTH); // Goi ham ReadString de doc vao ten file dich
+    srcFileId = Open("test.txt", 1); // Goi ham Open de mo file nguon
+
+    if (srcFileId != -1) // Kiem tra mo file thanh cong
     {
-        // Goi ham Read de doc noi dung nhap vao stdin
-        // Bay gio len vua co the la do dai, vua co the la ket qua (thanh cong/that bai) cua ham Read()
-        len = Read(buffer, MAX_LENGTH, stdin);
+        // // Tao file moi voi ten la chuoi luu trong "dest"
+        // destFileId = CreateFile(dest);
+        // Close(destFileId);
 
-        if (len != -1 && len != -2) // Kiem tra co bi loi, hay co EOF hay khong
+        destFileId = Open("testclone.txt", 0); // Goi ham Open de mo file dich
+        if (destFileId != -1)                  // Kiem tra mo file thanh cong
         {
-            stdout = Open("testclone.txt", 0); // Goi ham Open voi type = 3 de su dung stdout
-            if (stdout != -1)
+            // Seek den cuoi file nguon de lay duoc do dai noi dung file nguon (fileSize)
+            fileSize = Seek(-1, srcFileId);
+
+            // Chuan bi sao chep
+            Seek(0, srcFileId);  // Seek den dau file nguon
+            Seek(0, destFileId); // Seek den dau file dich
+            i = 0;
+
+            // Vong lap chay tu dau file nguon den het file nguon
+            for (; i < fileSize; i++)
             {
-                // PrintString(" -> file output: ");
-                Write(buffer, len, stdout); // Goi ham Write de ghi noi dung doc duoc vao stdout
-                Close(stdout);              // Goi ham Close de dong stdout
+                Read(&c, 1, srcFileId);   // Doc tung ki tu cua file nguon
+                Write(&c, 1, destFileId); // Ghi vao file dich
             }
+
+            PrintString(" -> Copy thanh cong.\n\n");
+            Close(destFileId); // Goi ham Close de dong file dich
         }
-        Close(stdin); // Goi ham Close de dong stdin
+        else
+        {
+            PrintString(" -> Tao file dich khong thanh cong!!!\n\n");
+        }
+
+        Close(srcFileId); // Goi ham Close de dong file nguon
     }
-    // PrintString("\n\n");
-    /*
-        char str[50];
-        int length = 50;
-        PrintString("------------CHUONG TRINH ECHO-------------\n\n");
-        PrintString("Nhap chuoi: ");
-        ReadString(str, length);
-        PrintString("Chuoi vua nhap: ");
-        PrintString(str);
-        PrintString("\n\n");
-    */
+    else
+    {
+        PrintString("\nLoi khi mo file");
+    }
+
     return 0;
 }

@@ -633,58 +633,58 @@ void ExceptionHandlerWrite()
 // Output : success: real position of cursor, fail: -1
 void ExceptionHandlerSeek()
 {
-	// // int Seek(int pos, OpenFileId id)
-	// int position;
-	// int fileID;
+	// int Seek(int pos, OpenFileId id)
+	int position;
+	int fileID;
 
-	// int position = kernel->machine->ReadRegister(4); // read position from register r4
-	// int fileID = kernel->machine->ReadRegister(5);	 // read fileID from register r5
+	position = kernel->machine->ReadRegister(4); // read position from register r4
+	fileID = kernel->machine->ReadRegister(5);	 // read fileID from register r5
 
-	// // fileId is not match
-	// if (fileID < 0 || fileID > 10)
-	// {
-	// 	printf("\nFileID is not match");
-	// 	DEBUG('a', "\nFileID is not match");
-	// 	kernel->machine->WriteRegister(2, -1);
-	// 	return;
-	// }
+	// fileId is not match
+	if (fileID < 0 || fileID > 10)
+	{
+		printf("\nFileID is not match");
+		DEBUG('a', "\nFileID is not match");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
 
-	// // fileId does not exist
-	// if (kernel->fileSystem->openTable[fileID] == NULL)
-	// {
-	// 	printf("\nFileID does not exist");
-	// 	DEBUG('a', "\nFileID does not exist");
-	// 	kernel->machine->WriteRegister(2, -1);
-	// 	return;
-	// }
+	// fileId does not exist
+	if (kernel->fileSystem->openTable[fileID] == NULL)
+	{
+		printf("\nFileID does not exist");
+		DEBUG('a', "\nFileID does not exist");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
 
-	// // seek to stdin or stdout
-	// if (kernel->fileSystem->openTable[fileID]->type == 2 || kernel->fileSystem->openTable[fileID]->type == 3)
-	// {
-	// 	printf("\nCannot seek to stdin or stdout");
-	// 	DEBUG('a', "\nCannot seek to stdin or stdout");
-	// 	kernel->machine->WriteRegister(2, -1);
-	// 	return;
-	// }
+	// seek to stdin or stdout
+	if (kernel->fileSystem->openTable[fileID]->type == 2 || kernel->fileSystem->openTable[fileID]->type == 3)
+	{
+		printf("\nCannot seek to stdin or stdout");
+		DEBUG('a', "\nCannot seek to stdin or stdout");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
 
-	// // if position = -1, seek cursor to end of file
-	// if (position == -1)
-	// {
-	// 	position = kernel->fileSystem->openTable[fileID]->Length();
-	// }
+	// if position = -1, seek cursor to end of file
+	if (position == -1)
+	{
+		position = kernel->fileSystem->openTable[fileID]->Length();
+	}
 
-	// // position is not match
-	// if (position < 0 || position > kernel->fileSystem->openTable[fileID]->Length())
-	// {
-	// 	printf("\nPosition is not match");
-	// 	DEBUG('a', "\nPosition is not match");
-	// 	kernel->machine->WriteRegister(2, -1);
-	// 	return;
-	// }
+	// position is not match
+	if (position < 0 || position > kernel->fileSystem->openTable[fileID]->Length())
+	{
+		printf("\nPosition is not match");
+		DEBUG('a', "\nPosition is not match");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
 
-	// // Seek cursor to position
-	// kernel->fileSystem->openTable[fileID]->Seek(position);
-	// kernel->machine->WriteRegister(2, position);
+	// Seek cursor to position
+	kernel->fileSystem->openTable[fileID]->Seek(position);
+	kernel->machine->WriteRegister(2, position);
 }
 
 // Usage: create a process from a program and schedule it for execution

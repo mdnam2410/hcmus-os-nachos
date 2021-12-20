@@ -1962,7 +1962,7 @@ main.o: ../threads/main.cc /usr/include/stdc-predef.h ../lib/copyright.h \
  ../threads/scheduler.h ../lib/list.h ../lib/list.cc \
  ../machine/interrupt.h ../machine/callback.h ../machine/stats.h \
  ../threads/alarm.h ../machine/timer.h ../threads/ptable.h \
- ../threads/pcb.h ../threads/synch.h ../threads/stable.h ../threads/sem.h
+ ../threads/pcb.h ../threads/synch.h ../threads/stable.h
 scheduler.o: ../threads/scheduler.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../lib/debug.h ../lib/utility.h ../lib/sysdep.h \
  /usr/include/c++/4.8/iostream \
@@ -2447,8 +2447,8 @@ thread.o: ../threads/thread.cc /usr/include/stdc-predef.h \
  ../machine/callback.h ../machine/stats.h ../threads/alarm.h \
  ../machine/timer.h
 stable.o: ../threads/stable.cc /usr/include/stdc-predef.h \
- ../threads/stable.h ../threads/sem.h ../threads/synch.h \
- ../lib/copyright.h ../threads/thread.h ../lib/utility.h ../lib/sysdep.h \
+ ../threads/stable.h ../threads/synch.h ../lib/copyright.h \
+ ../threads/thread.h ../lib/utility.h ../lib/sysdep.h \
  /usr/include/c++/4.8/iostream \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/4.8/bits/os_defines.h \
@@ -3052,7 +3052,7 @@ exception.o: ../userprog/exception.cc /usr/include/stdc-predef.h \
  ../machine/console.h ../threads/synch.h \
  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h ../threads/stable.h \
- ../threads/sem.h ../threads/ptable.h ../threads/pcb.h
+ ../threads/ptable.h ../threads/pcb.h
 synchconsole.o: ../userprog/synchconsole.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../userprog/synchconsole.h ../lib/utility.h \
  ../machine/callback.h ../machine/console.h ../threads/synch.h \
