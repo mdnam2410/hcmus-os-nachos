@@ -26,7 +26,8 @@ static void SynchWriteFunct(int arg) { synchWriteAvail->V(); }
 
 SynchConsole::SynchConsole()
 {
-	cons = new Console(NULL, NULL, SynchReadFunct, SynchWriteFunct, 0);
+	consIn = new ConsoleInput(NULL, this);
+	consOut = new ConsoleOutput(NULL, this);
 	synchReadAvail = new Semaphore("Synch Read Avail", 0);
 	synchWriteAvail = new Semaphore("Synch Write Avail", 0);
 	RLineBlock = new Semaphore("Read Synch Line Block", 1);
@@ -40,7 +41,8 @@ SynchConsole::SynchConsole()
 
 SynchConsole::SynchConsole(char *in, char *out)
 {
-	cons = new Console(in, out, SynchReadFunct, SynchWriteFunct, 0);
+	consIn = new ConsoleInput(in, this);
+	consOut = new ConsoleOutput(out, this);
 	synchReadAvail = new Semaphore("Synch Read Avail", 0);
 	synchWriteAvail = new Semaphore("Synch Write Avail", 0);
 	RLineBlock = new Semaphore("Read Synch Line Block", 1);
@@ -54,7 +56,8 @@ SynchConsole::SynchConsole(char *in, char *out)
 
 SynchConsole::~SynchConsole()
 {
-	delete cons;
+	delete consIn;
+	delete consOut;
 	delete synchReadAvail;
 	delete synchWriteAvail;
 	delete RLineBlock;
@@ -77,8 +80,8 @@ int SynchConsole::Write(char *from, int numBytes)
 
 	for (loop = 0; loop < numBytes; loop++)
 	{
-		cons->PutChar(from[loop]); // Write and wait
-		synchWriteAvail->P();	   // Block for a character
+		consOut->PutChar(from[loop]); // Write and wait
+		synchWriteAvail->P();		  // Block for a character
 	}
 
 	WLineBlock->V(); // Free Up
@@ -110,8 +113,8 @@ int SynchConsole::Read(char *into, int numBytes)
 	{
 		do
 		{
-			synchReadAvail->P();  // Block for single char
-			ch = cons->GetChar(); // Get a char (could)
+			synchReadAvail->P();	// Block for single char
+			ch = consIn->GetChar(); // Get a char (could)
 		} while (ch == EOF);
 
 		if ((ch == '\012') || (ch == '\001'))
@@ -131,6 +134,12 @@ int SynchConsole::Read(char *into, int numBytes)
 		return -1;	  // For end of stream
 	else
 		return loop; // How many did we rd
+}
+
+void SynchConsole::CallBack()
+{
+	synchReadAvail->V();
+	synchWriteAvail->V();
 }
 
 // CAE - MULTI - END SECTION

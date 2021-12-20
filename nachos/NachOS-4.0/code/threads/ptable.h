@@ -17,15 +17,21 @@ public:
     ~PTable();
 
     // Allocates the start up process (first executed by Nachos)
-    void InitializeFirstProcess(Thread* thread);
+    void InitializeFirstProcess(const char* fileName, Thread* thread);
+
+    int GetCurrentThreadId();
 
     // Sets up PCB and schedules the program stored in `fileName`.
     // Returns the process id on success, -1 otherwise
     int ExecUpdate(char *fileName);
 
-    int ExitUpdate(int ec);
-
+    // Updates the process table when the current thread join into the thread
+    // `id`
     int JoinUpdate(int id);
+
+    // Updates the process table when the current thread exit with exit code
+    // `ec`
+    int ExitUpdate(int ec);
 
     // Return an index to a free slot in the table, returns -1
     // if the table is full
@@ -36,6 +42,9 @@ public:
 
     // Removes a PCB
     void Remove(int pid);
+
+    // Print the current process table
+    void Print();
 
 private:
     // The array of system-wide PCBs to manage

@@ -25,6 +25,14 @@ public:
 
     ~PCB();
 
+    // Initialize the first PCB
+    //
+    // This constructor should be used exclusively for the first program 
+    // executed by Nachos. Because we are now supporting process control
+    // blocks for Nachos, so it's obvious that the first process should be the
+    // first one to be allocated to the process table.
+    PCB(const char *fileName, Thread *thread);
+
     // Creates thread and schedules for program stored in `fileName`
     //
     // Returns the process ID on success, -1 on failure
@@ -32,13 +40,24 @@ public:
 
     int GetID();
 
+    // Returns the name of the file used to run this process.
+    const char *GetExecutableFileName();
+
+    // Returns the current Thread object of this process. Use with care.
+    const Thread* GetThread();
+
+    // Returns the number of processes this process is waiting for.
     int GetNumWait();
 
+    // Blocks until JoinRelease() is called. This method is called by the 
+    // parent process that wants to join into this process (i.e. waiting for
+    // this process to finish).
     void JoinWait();
 
-    void ExitWait();
-
+    // Releases the parent that are waiting for this process.
     void JoinRelease();
+
+    void ExitWait();
 
     void ExitRelease();
 

@@ -112,10 +112,10 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose exec
+PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join
 endif
 
-all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose exec
+all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
@@ -223,11 +223,22 @@ openclose: openclose.o start.o
 	$(LD) $(LDFLAGS) start.o openclose.o -o openclose.coff
 	$(COFF2NOFF) openclose.coff openclose
 
+readwrite.o: readwrite.c
+	$(CC) $(CFLAGS) -c readwrite.c
+readwrite: readwrite.o start.o
+	$(LD) $(LDFLAGS) start.o readwrite.o -o readwrite.coff
+	$(COFF2NOFF) readwrite.coff readwrite
 exec.o: exec.c
 	$(CC) $(CFLAGS) -c exec.c
 exec: exec.o start.o
 	$(LD) $(LDFLAGS) start.o exec.o -o exec.coff
 	$(COFF2NOFF) exec.coff exec
+
+join.o: join.c
+	$(CC) $(CFLAGS) -c join.c
+join: join.o start.o
+	$(LD) $(LDFLAGS) start.o join.o -o join.coff
+	$(COFF2NOFF) join.coff join
 
 clean:
 	$(RM) -f *.o *.ii

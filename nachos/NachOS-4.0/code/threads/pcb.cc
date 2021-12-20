@@ -33,6 +33,15 @@ PCB::PCB()
     _mutex = new Semaphore("mutex", 1);
 }
 
+PCB::PCB(const char *fileName, Thread *thread)
+    : PCB()
+{
+    _pid = 0;
+    _file = new char[strlen(fileName) + 1];
+    strcpy(_file, fileName);
+    _thread = thread;
+}
+
 PCB::~PCB()
 {
     delete _file;
@@ -48,6 +57,16 @@ PCB::~PCB()
 int PCB::GetID()
 {
     return _pid;
+}
+
+const char* PCB::GetExecutableFileName()
+{
+    return _file;
+}
+
+const Thread* PCB::GetThread()
+{
+    return _thread;
 }
 
 int PCB::GetNumWait()
