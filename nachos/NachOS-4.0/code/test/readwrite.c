@@ -4,32 +4,43 @@
 int main()
 {
 
-    int input;
-    int output;
+    int stdin;
+    int stdout;
     char buffer[MAX_LENGTH];
     int len;
     // PrintString("\n\t\t\t-----ECHO TRONG NACHOS-----\n\n");
     // PrintString(" - input file: ");
 
-    // Goi ham Open de mo file input
-    input = Open("test.txt", 1);
-    if (input != -1)
+    // Goi ham Open de mo file stdin
+    stdin = Open("test.txt", 1);
+    if (stdin != -1)
     {
-        // Goi ham Read de doc noi dung nhap vao input
+        // Goi ham Read de doc noi dung nhap vao stdin
         // Bay gio len vua co the la do dai, vua co the la ket qua (thanh cong/that bai) cua ham Read()
-        len = Read(buffer, MAX_LENGTH, input);
+        len = Read(buffer, MAX_LENGTH, stdin);
 
         if (len != -1 && len != -2) // Kiem tra co bi loi, hay co EOF hay khong
         {
-            output = Open("testclone.txt", 0); // Goi ham Open voi type = 3 de su dung output
-            if (output != -1)
+            stdout = Open("testclone.txt", 0); // Goi ham Open voi type = 3 de su dung stdout
+            if (stdout != -1)
             {
                 // PrintString(" -> file output: ");
-                Write(buffer, len, output); // Goi ham Write de ghi noi dung doc duoc vao output
-                Close(output);              // Goi ham Close de dong output
+                Write(buffer, len, stdout); // Goi ham Write de ghi noi dung doc duoc vao stdout
+                Close(stdout);              // Goi ham Close de dong stdout
             }
         }
-        Close(input); // Goi ham Close de dong input
+        Close(stdin); // Goi ham Close de dong stdin
     }
+    // PrintString("\n\n");
+    /*
+        char str[50];
+        int length = 50;
+        PrintString("------------CHUONG TRINH ECHO-------------\n\n");
+        PrintString("Nhap chuoi: ");
+        ReadString(str, length);
+        PrintString("Chuoi vua nhap: ");
+        PrintString(str);
+        PrintString("\n\n");
+    */
     return 0;
 }
