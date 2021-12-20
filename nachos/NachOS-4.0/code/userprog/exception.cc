@@ -476,6 +476,9 @@ void ExceptionHandlerWrite()
 {
 }
 
+// Usage: create a process from a program and schedule it for execution
+// Input: address to the program name
+// Output: the process ID, or -1 on failure
 void ExceptionHandlerExec()
 {
 	DEBUG(dbgSys, "Syscall: Exec(filename)");
@@ -495,6 +498,9 @@ void ExceptionHandlerExec()
 	delete fileName;
 }
 
+// Usage: block the current thread until the child thread has exited
+// Input: ID of the thread being joined
+// Output: exit code of the thread
 void ExceptionHandlerJoin()
 {
 	DEBUG(dbgSys, "Syscall: Join");
@@ -503,6 +509,9 @@ void ExceptionHandlerJoin()
 	kernel->machine->WriteRegister(2, result);
 }
 
+// Usage: exit current thread
+// Input: exit code to pass to parent
+// Output: none
 void ExceptionHandlerExit()
 {
 	DEBUG(dbgSys, "Syscall: Exit");
