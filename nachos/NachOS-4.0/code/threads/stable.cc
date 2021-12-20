@@ -32,13 +32,16 @@ STable::~STable()
 
 int STable::Create(char *name, int value)
 {
+	DEBUG(dbgSynch, "STable::Create semaphore "<< name << " - " << value);
 	// Check exists semphore
 	for(int i=0; i<MAX_SEMAPHORE; i++)
 	{
 		if(bm->Test(i))
 		{
+			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
+				DEBUG(dbgSynch, "STable: Find existed semaphore");
 				return -1;
 			}
 		}
@@ -50,51 +53,59 @@ int STable::Create(char *name, int value)
 	// If table is full then return -1
 	if (id < 0)
 	{
+		DEBUG(dbgSynch, "STable: Error table is full");
 		return -1;
 	}
 
     // If find empty slot then load semaphore to table[id]
-	this->table[id] = new Semaphore(name, value);
+	this->table[id] = new Sem(name, value);
+	DEBUG(dbgSynch, "STable: Create in table[" << id << "]");
 	return 0;
 }
 
 int STable::Wait(char *name)
 {
+    DEBUG(dbgSynch, "STable::Wait(\"" << name << "\")");
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
         // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
+			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore down()
-				table[i]->P();
+			    DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
+				table[i]->Wait();
 				return 0;
 			}
 		}
 	}
-	printf("Not exists semaphore");
+	DEBUG(dbgSynch, "Not exists semaphore in wait");
 	return -1;
 }
 
 int STable::Signal(char *name)
 {
+    DEBUG(dbgSynch, "STable::Signal(\"" << name << "\")");
 	for(int i =0; i < MAX_SEMAPHORE; i++)
 	{
         // Check does slot[i] load semaphore
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
+			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore up()
-				table[i]->V();
+			    DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
+				table[i]->Signal();
 				return 0;
 			}
 		}
 	}
-	printf("Not exists semaphore");
+	DEBUG(dbgSynch, "Not exists semaphore in signal");
 	return -1;
 }
 

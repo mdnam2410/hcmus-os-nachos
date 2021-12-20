@@ -1,6 +1,6 @@
 #ifndef STABLE_H
 #define STABLE_H
-#include "synch.h"
+#include "sem.h"
 #include "bitmap.h"
 #define MAX_SEMAPHORE 10
 
@@ -10,7 +10,7 @@ private:
     // Manager empty slot
 	Bitmap* bm;
     // Lock manger (10 semaphore)
-	Semaphore* table[MAX_SEMAPHORE];
+	Sem* table[MAX_SEMAPHORE];
 public:
     // Constructor
     // Create 10 null semephore for semTab

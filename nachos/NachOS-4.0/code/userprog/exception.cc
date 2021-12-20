@@ -628,6 +628,65 @@ void ExceptionHandlerWrite()
 	delete[] buffer;
 }
 
+// Usage: Seek in file
+// Input : position of cursor, fileID
+// Output : success: real position of cursor, fail: -1
+void ExceptionHandlerSeek()
+{
+	// int Seek(int pos, OpenFileId id)
+	int position;
+	int fileID;
+
+	position = kernel->machine->ReadRegister(4); // read position from register r4
+	fileID = kernel->machine->ReadRegister(5);	 // read fileID from register r5
+
+	// fileId is not match
+	if (fileID < 0 || fileID > 10)
+	{
+		printf("\nFileID is not match");
+		DEBUG('a', "\nFileID is not match");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// fileId does not exist
+	if (kernel->fileSystem->openTable[fileID] == NULL)
+	{
+		printf("\nFileID does not exist");
+		DEBUG('a', "\nFileID does not exist");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// seek to stdin or stdout
+	if (kernel->fileSystem->openTable[fileID]->type == 2 || kernel->fileSystem->openTable[fileID]->type == 3)
+	{
+		printf("\nCannot seek to stdin or stdout");
+		DEBUG('a', "\nCannot seek to stdin or stdout");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// if position = -1, seek cursor to end of file
+	if (position == -1)
+	{
+		position = kernel->fileSystem->openTable[fileID]->Length();
+	}
+
+	// position is not match
+	if (position < 0 || position > kernel->fileSystem->openTable[fileID]->Length())
+	{
+		printf("\nPosition is not match");
+		DEBUG('a', "\nPosition is not match");
+		kernel->machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// Seek cursor to position
+	kernel->fileSystem->openTable[fileID]->Seek(position);
+	kernel->machine->WriteRegister(2, position);
+}
+
 // Usage: create a process from a program and schedule it for execution
 // Input: address to the program name
 // Output: the process ID, or -1 on failure
@@ -680,12 +739,12 @@ void ExceptionHandlerCreateSemaphore()
 	int virtAddr = kernel->machine->ReadRegister(4); // read name address from 4th register
 	int semVal = kernel->machine->ReadRegister(5);	 // read type from 5th register
 	char *name = User2System(virtAddr, MaxFileLength); // Copy semaphore name charArray form userSpace to systemSpace
-
+	
 	// Validate name
 	if(name == NULL)
 	{
-		DEBUG('a', "\n Not enough memory in System");
-		printf("\n Not enough memory in System");
+		// DEBUG(dbgSynch, "\nNot enough memory in System");
+		printf("\nNot enough memory in System");
 		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
 		return;
@@ -696,8 +755,8 @@ void ExceptionHandlerCreateSemaphore()
 	// Check error
 	if(res == -1)
 	{
-		DEBUG('a', "\n Can not create semaphore");
-		printf("\n Can not create semaphore");
+		// DEBUG('a', "\nCan not create semaphore");
+		printf("\nCan not create semaphore");
 	}
 	
 	delete[] name;
@@ -717,8 +776,8 @@ void ExceptionHandlerWait()
 	// Validate name
 	if(name == NULL)
 	{
-		DEBUG('a', "\n Not enough memory in System");
-		printf("\n Not enough memory in System");
+		// DEBUG(dbgSynch, "\nNot enough memory in System");
+		printf("\nNot enough memory in System");
 		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
 		return;
@@ -729,8 +788,8 @@ void ExceptionHandlerWait()
 	// Check error
 	if(res == -1)
 	{
-		DEBUG('a', "\n Not exists semaphore");
-		printf("\n Not exists semaphore");
+		// DEBUG(dbgSynch, "\nNot exists semaphore");
+		printf("\nNot exists semaphore");
 	}
 
 	delete[] name;
@@ -750,7 +809,7 @@ void ExceptionHandlerSignal()
 	// Validate name
 	if(name == NULL)
 	{
-		DEBUG('a', "\n Not enough memory in System");
+		// DEBUG(dbgSynch, "\nNot enough memory in System");
 		printf("\n Not enough memory in System");
 		kernel->machine->WriteRegister(2, -1);
 		delete[] name;
@@ -762,8 +821,8 @@ void ExceptionHandlerSignal()
 	// Check error
 	if(res == -1)
 	{
-		DEBUG('a', "\n Not exists semaphore");
-		printf("\n Not exists semaphore");
+		// DEBUG(dbgSynch, "\nNot exists semaphore");
+		printf("\nNot exists semaphore");
 	}
 	
 	delete[] name;
