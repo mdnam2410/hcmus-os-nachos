@@ -307,7 +307,5 @@ main(int argc, char **argv)
     kernel->interrupt->Halt();
     
     ASSERTNOTREACHED();
-    // Stable
-    semTab = new STable();
 }
 
