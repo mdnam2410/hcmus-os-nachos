@@ -109,8 +109,10 @@ public:
 	{
 		for (int i = 2; i < 10; i++)
 		{
-			if (openTable[i] == NULL)
+			if (openTable[i] == NULL){
+				DEBUG(dbgFile, "FindFreeSlot: "<<i);
 				return i;
+			}
 		}
 		return -1;
 	}

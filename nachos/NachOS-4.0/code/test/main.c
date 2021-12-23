@@ -140,12 +140,15 @@ int main()
         {
             if (Read(&c_readFile, 1, si_result) < 1)
             {
+                PrintString("\r\n");
                 Write("\r\n", 2, si_output);
                 Close(si_result);
                 Signal("m_vn");
                 break;
             }
             Write(&c_readFile, 1, si_output);
+            PrintChar(c_readFile);
+            PrintString(" ");
             Write(" ", 1, si_output);
         }
     }

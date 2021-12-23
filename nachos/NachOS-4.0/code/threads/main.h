@@ -28,5 +28,8 @@ extern Semaphore *addrLock;
 extern PTable *pTab;
 extern STable *semTab;
 
+static int count_open = 0;
+static int count_close = 0;
+
 #endif // MAIN_H
 

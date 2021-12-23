@@ -164,8 +164,7 @@ void ExceptionHandlerReadNum()
 	// if input is only '-' or not a number then we throw error
 	if ((!isPositive && length_num == 0) || isNaN)
 	{
-		printf("\n\nThe integer number is not valid");
-		DEBUG('a', "\nThe integer number is not valid");
+		DEBUG(dbgMach, "The integer number is not valid");
 		kernel->machine->WriteRegister(2, 0);
 		delete num_buffer;
 		return;
@@ -348,7 +347,7 @@ void ExceptionHandlerCreateFile()
 	if (strlen(filename) == 0)
 	{
 		printf("\nFile name is not valid");
-		DEBUG('a', "\nFile name is not valid");
+		DEBUG(dbgFile, "\nFile name is not valid");
 		kernel->machine->WriteRegister(2, -1); // fail
 		delete[] filename;
 		return;
@@ -358,7 +357,7 @@ void ExceptionHandlerCreateFile()
 	if (filename == NULL)
 	{
 		printf("\nNot enough memory in system");
-		DEBUG('a', "\nNot enough memory in system");
+		DEBUG(dbgFile, "\nNot enough memory in system");
 		kernel->machine->WriteRegister(2, -1); //  fail
 		delete[] filename;
 		return;
@@ -369,7 +368,7 @@ void ExceptionHandlerCreateFile()
 	if (!kernel->fileSystem->Create(filename, 0))
 	{
 		printf("\nError create file '%s'", filename);
-		DEBUG('a', "\nError create file '%s'" << filename);
+		DEBUG(dbgFile, "\nError create file '%s'" << filename);
 		kernel->machine->WriteRegister(2, -1); // fail
 		delete[] filename;
 		return;
@@ -401,7 +400,7 @@ void ExceptionHandlerOpen()
 	if (freeSlot == -1) // no free slot found
 	{
 		printf("\nFull slot in openTable");
-		DEBUG('a', "\nFull slot in openTable");
+		DEBUG(dbgFile, "\nFull slot in openTable");
 		kernel->machine->WriteRegister(2, -1); // write -1 to register r2
 		delete[] filename;
 		return;
@@ -419,7 +418,7 @@ void ExceptionHandlerOpen()
 		else
 		{
 			printf("\nFile does not exist");
-			DEBUG('a', "\nFile does not exist");
+			DEBUG(dbgFile, "\nFile does not exist");
 			kernel->machine->WriteRegister(2, -1); // fail
 		}
 		break;
@@ -431,9 +430,10 @@ void ExceptionHandlerOpen()
 		break;
 	default:
 		printf("\nType is not match");
-		DEBUG('a', "\nType is not match");
+		DEBUG(dbgFile, "\nType is not match");
 		kernel->machine->WriteRegister(2, -1); // fail
 	}
+	DEBUG(dbgFile,"Open file name "<< filename <<" has file id "<<freeSlot<<" lan thu " << count_open <<"\n");
 	delete[] filename;
 }
 
@@ -446,6 +446,7 @@ void ExceptionHandlerClose()
 	int fileID;
 
 	fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
+	DEBUG(dbgFile,"Close file id "<<fileID<<" lan thu " << count_open <<"\n");
 	if (fileID >= 0 && fileID < 10)
 	{
 		if (kernel->fileSystem->openTable[fileID])
@@ -458,14 +459,13 @@ void ExceptionHandlerClose()
 		else
 		{
 			printf("\nFile does not exist");
-			DEBUG('a', "\nFile does not exist");
+			DEBUG(dbgFile, "\nFile does not exist");
 			kernel->machine->WriteRegister(2, -1); // fail
 			return;
 		}
 	}
-
 	printf("\nFileID is not match");
-	DEBUG('a', "\nFile is not match");
+	DEBUG(dbgFile, "\nFile is not match");
 	kernel->machine->WriteRegister(2, -1); // fail
 }
 
@@ -487,8 +487,8 @@ void ExceptionHandlerRead()
 	// fileID is not match
 	if (fileID < 0 || fileID > 10)
 	{
-		printf("\nFileID is not match");
-		DEBUG('a', "\nFileID is not match");
+		printf("FileID is not match\n");
+		DEBUG(dbgFile, "FileID is not match");
 		kernel->machine->WriteRegister(2, -1); // fail
 		return;
 	}
@@ -496,8 +496,8 @@ void ExceptionHandlerRead()
 	// fileID does not exist
 	if (kernel->fileSystem->openTable[fileID] == NULL)
 	{
-		printf("\nFileID does not exist");
-		DEBUG('a', "\nFileID does not exist");
+		printf("FileID does not exist\n");
+		DEBUG(dbgFile, "FileID does not exist");
 		kernel->machine->WriteRegister(2, -1); // fail
 		return;
 	}
@@ -505,8 +505,8 @@ void ExceptionHandlerRead()
 	// read from stdout
 	if (kernel->fileSystem->openTable[fileID]->type == 3)
 	{
-		printf("\nCannot read from stdout");
-		DEBUG('a', "\nCannot read from stdout");
+		printf("Cannot read from stdout\n");
+		DEBUG(dbgFile, "Cannot read from stdout");
 		kernel->machine->WriteRegister(2, -1); // fail
 		return;
 	}
@@ -533,8 +533,8 @@ void ExceptionHandlerRead()
 		}
 		else // EOF
 		{
-			printf("\nEOF");
-			DEBUG('a', "\nEOF");
+			// printf("\nEOF");
+			// DEBUG('a', "\nEOF");
 			kernel->machine->WriteRegister(2, -2);
 		}
 	}
@@ -560,8 +560,8 @@ void ExceptionHandlerWrite()
 	// fileId is not match
 	if (fileID < 0 || fileID > 10)
 	{
-		printf("\nFileID is not match");
-		DEBUG('a', "\nFileID is not match");
+		// printf("FileID is not match\n");
+		DEBUG(dbgFile, "FileID is not match");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -569,8 +569,8 @@ void ExceptionHandlerWrite()
 	// fileId does not exist
 	if (kernel->fileSystem->openTable[fileID] == NULL)
 	{
-		printf("\nFileID does not exist");
-		DEBUG('a', "\nFileID does not exist");
+		// printf("FileID does not exist\n");
+		DEBUG(dbgFile, "FileID does not exist");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -578,8 +578,8 @@ void ExceptionHandlerWrite()
 	// write to read-only file
 	if (kernel->fileSystem->openTable[fileID]->type == 1)
 	{
-		printf("\nCannot write to read-only file");
-		DEBUG('a', "\nCannot write to read-only file");
+		// printf("Cannot write to read-only file");
+		DEBUG(dbgFile, "Cannot write to read-only file");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -587,8 +587,8 @@ void ExceptionHandlerWrite()
 	// write to stdin
 	if (kernel->fileSystem->openTable[fileID]->type == 2)
 	{
-		printf("\nCannot write to stdin");
-		DEBUG('a', "\nCannot write to stdin");
+		// printf("Cannot write to stdin\n");
+		DEBUG(dbgFile, "Cannot write to stdin");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -619,8 +619,8 @@ void ExceptionHandlerWrite()
 		}
 		else
 		{
-			printf("\nWrite fail");
-			DEBUG('a', "\nWrite fail");
+			// printf("Write fail\n");
+			DEBUG(dbgFile, "Write fail");
 			kernel->machine->WriteRegister(2, -1);
 		}
 	}
@@ -643,8 +643,8 @@ void ExceptionHandlerSeek()
 	// fileId is not match
 	if (fileID < 0 || fileID > 10)
 	{
-		printf("\nFileID is not match");
-		DEBUG('a', "\nFileID is not match");
+		// printf("FileID is not match\n");
+		DEBUG(dbgFile, "FileID is not match");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -652,8 +652,8 @@ void ExceptionHandlerSeek()
 	// fileId does not exist
 	if (kernel->fileSystem->openTable[fileID] == NULL)
 	{
-		printf("\nFileID does not exist");
-		DEBUG('a', "\nFileID does not exist");
+		// printf("FileID does not exist\n");
+		DEBUG(dbgFile, "FileID does not exist");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
@@ -661,29 +661,32 @@ void ExceptionHandlerSeek()
 	// seek to stdin or stdout
 	if (kernel->fileSystem->openTable[fileID]->type == 2 || kernel->fileSystem->openTable[fileID]->type == 3)
 	{
-		printf("\nCannot seek to stdin or stdout");
-		DEBUG('a', "\nCannot seek to stdin or stdout");
+		// printf("Cannot seek to stdin or stdout\n");
+		DEBUG(dbgFile, "Cannot seek to stdin or stdout");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
 
 	// if position = -1, seek cursor to end of file
+	// DEBUG(dbgFile,position);
 	if (position == -1)
 	{
 		position = kernel->fileSystem->openTable[fileID]->Length();
+		DEBUG(dbgFile,"SIZE :" << position);
 	}
 
 	// position is not match
 	if (position < 0 || position > kernel->fileSystem->openTable[fileID]->Length())
 	{
-		printf("\nPosition is not match");
-		DEBUG('a', "\nPosition is not match");
+		// printf("Position is not match\n");
+		DEBUG(dbgFile, "Position is not match");
 		kernel->machine->WriteRegister(2, -1);
 		return;
 	}
 
 	// Seek cursor to position
 	kernel->fileSystem->openTable[fileID]->Seek(position);
+	DEBUG(dbgFile,position);
 	kernel->machine->WriteRegister(2, position);
 }
 
@@ -833,50 +836,42 @@ void ExceptionHandlerSignal()
 void ExceptionHandler(ExceptionType which)
 {
 	int type = kernel->machine->ReadRegister(2);
-
 	switch (which)
 	{
 	case NoException:
 		return;
 	case PageFaultException:
-		DEBUG('a', "\nUnexpected user mode exception PageFaultException");
-		printf("\n\nUnexpected user mode exception PageFaultException");
+		DEBUG(dbgSys, "Unexpected user mode exception PageFaultException");
 		kernel->interrupt->Halt();
 		break;
 
 	case ReadOnlyException:
-		DEBUG('a', "\nUnexpected user mode exception ReadOnlyException");
-		printf("\n\nUnexpected user mode exception ReadOnlyException");
+		DEBUG(dbgSys, "\nUnexpected user mode exception ReadOnlyException");
 		kernel->interrupt->Halt();
 		break;
 
 	case BusErrorException:
-		DEBUG('a', "\nUnexpected user mode exception BusErrorException");
-		printf("\n\nUnexpected user mode exception BusErrorException");
+		DEBUG(dbgSys, "\nUnexpected user mode exception BusErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case AddressErrorException:
-		DEBUG('a', "\nUnexpected user mode exception AddressErrorException");
-		printf("\n\nUnexpected user mode exception AddressErrorException");
+		DEBUG(dbgSys, "\nUnexpected user mode exception AddressErrorException");
 		kernel->interrupt->Halt();
 		break;
 
 	case OverflowException:
-		DEBUG('a', "\nUnexpected user mode exception OverflowException");
-		printf("\n\nUnexpected user mode exception OverflowException");
+		DEBUG(dbgSys, "\nUnexpected user mode exception OverflowException");
 		kernel->interrupt->Halt();
 		break;
 
 	case IllegalInstrException:
-		DEBUG('a', "\nUnexpected user mode exception IllegalInstrException");
-		printf("\n\nUnexpected user mode exception IllegalInstrException");
+		DEBUG(dbgSys, "\nUnexpected user mode exception IllegalInstrException");
 		kernel->interrupt->Halt();
 		break;
 
 	case NumExceptionTypes:
-		DEBUG('a', "\nUnexpected user mode exception NumExceptionTypes");
-		printf("\n\nUnexpected user mode exception NumExceptionTypes");
+		DEBUG(dbgSys, "\nUnexpected user mode exception NumExceptionTypes");
 		kernel->interrupt->Halt();
 		break;
 
@@ -888,8 +883,7 @@ void ExceptionHandler(ExceptionType which)
 			// Output: Shutdown notification
 			// Usage: Shutdown
 
-			DEBUG('a', "\nShutdown, initiated by user program. ");
-			printf("\nShutdown, initiated by user program. ");
+			DEBUG(dbgSys, "Shutdown, initiated by user program. ");
 			kernel->interrupt->Halt();
 			return;
 		case SC_ReadNum:
@@ -997,6 +991,12 @@ void ExceptionHandler(ExceptionType which)
 		case SC_Signal:
 		{
 			ExceptionHandlerSignal();
+			break;
+		}
+
+		case SC_Seek:
+		{
+			ExceptionHandlerSeek();
 			break;
 		}
 

@@ -13,7 +13,7 @@ void main()
     int i_File;                  // Luu con tro file
     //-----------------------------------------------------------
     Signal("m_vn");
-
+    // WHILE(11111111111111111111111111111111111111)
     while (1)
     {
         lengthFile = 0;
@@ -58,6 +58,7 @@ void main()
             return;
         }
 
+        // WHILE(2222222222222222222222222222222222222222)
         // Ghi dung tich vao file voinuoc.txt tu file sinhvien.txt
         while (i_File < lengthFile)
         {
@@ -104,8 +105,10 @@ void main()
             }
             i_File++;
         }
+        // WHILE(2222222222222222222222222222222222222222)
         // Ket thuc tien trinh sinhvien va voinuoc quay lai ham SvVn
         Signal("main");
     }
+    // WHILE(11111111111111111111111111111111111111)
     // Quay lai ham Svvn
 }

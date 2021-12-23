@@ -112,10 +112,10 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join SvVn sinhvien voinuoc
+PROGRAMS = add halt shell matmult sort segments readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join main sinhvien voinuoc
 endif
 
-all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join SvVn sinhvien voinuoc
+all: halt shell matmult sort readnum printnum readchar printchar readstring printstring randomnum ascii help createfile openclose readwrite exec join main sinhvien voinuoc
 
 start.o: start.S ../userprog/syscall.h
 	$(CC) $(CFLAGS) $(ASFLAGS) -c start.S
@@ -240,11 +240,11 @@ join: join.o start.o
 	$(LD) $(LDFLAGS) start.o join.o -o join.coff
 	$(COFF2NOFF) join.coff join
 
-SvVn.o: SvVn.c
-	$(CC) $(CFLAGS) -c SvVn.c
-SvVn: SvVn.o start.o
-	$(LD) $(LDFLAGS) start.o SvVn.o -o SvVn.coff
-	$(COFF2NOFF) SvVn.coff SvVn
+main.o: main.c
+	$(CC) $(CFLAGS) -c main.c
+main: main.o start.o
+	$(LD) $(LDFLAGS) start.o main.o -o main.coff
+	$(COFF2NOFF) main.coff main
 
 voinuoc.o: voinuoc.c
 	$(CC) $(CFLAGS) -c voinuoc.c

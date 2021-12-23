@@ -38,7 +38,7 @@ int STable::Create(char *name, int value)
 	{
 		if(bm->Test(i))
 		{
-			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
+			// DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
 				DEBUG(dbgSynch, "STable: Find existed semaphore");
@@ -72,11 +72,11 @@ int STable::Wait(char *name)
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
-			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
+			// DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore down()
-			    DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
+			    // DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
 				table[i]->Wait();
 				return 0;
 			}
@@ -95,11 +95,11 @@ int STable::Signal(char *name)
 		if(bm->Test(i))
 		{
             // if yes then compare nam with name of semaphore in table
-			DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
+			// DEBUG(dbgSynch, "Name "<<i<<": "<<table[i]->getName());
 			if(strcmp(name, table[i]->getName()) == 0)
 			{
                 // If exist then make semaphore up()
-			    DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
+			    // DEBUG(dbgSynch, "STable: Find semaphore in table[" << i << "]");
 				table[i]->Signal();
 				return 0;
 			}

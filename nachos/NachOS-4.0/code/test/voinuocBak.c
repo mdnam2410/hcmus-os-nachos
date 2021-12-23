@@ -1,6 +1,5 @@
 #include "syscall.h"
 #include "copyright.h"
-#define SO_VOI_NUOC 3
 
 void main()
 {
@@ -8,18 +7,13 @@ void main()
     int f_Success;             // Bien co dung de kiem tra thanh cong
     int si_voinuoc, si_result; // Bien id cho file
     char c_readFile;           // Bien ki tu luu ki tu doc tu file
-    int vn[SO_VOI_NUOC];                // n voi nuoc
+    int v1, v2;                // Voi 1, voi 2
     int v;                     // Dung tich nuoc cua sinh vien
     int flag_done_result;      // Bien co luu dau hieu doc xong file result
-    int index_min;
-    int i;
 
     //-----------------------------------------------------------
 
-    
-    for(i = 0; i< SO_VOI_NUOC; ++i){
-        vn[i]=0;
-    }
+    v1 = v2 = 0;
     // Xu ly voi nuoc
     // WHILE(11111111111111111111111111111111111111)
     while (1)
@@ -54,14 +48,14 @@ void main()
             // WHILE(3333333333333333333333333333333333333333333333)
             while (1)
             {
-                if (Read(&c_readFile, 1, si_voinuoc) == -2) // EOF in file
+                if (Read(&c_readFile, 1, si_voinuoc) == -2)
                 {
                     Close(si_voinuoc);
                     break;
                 }
-                if (c_readFile != '*') // EOF user define
+                if (c_readFile != '*')
                 {
-                    v = v * 10 + (c_readFile - 48); 
+                    v = v * 10 + (c_readFile - 48);
                 }
                 else
                 {
@@ -73,26 +67,22 @@ void main()
             // WHILE(3333333333333333333333333333333333333333333333)
             if (v != 0)
             {
-                // find min in vector vn and add it
-                index_min = 0;
-                for(i = 1; i< SO_VOI_NUOC; ++i){
-                    if(vn[index_min] > vn[i]){
-                        index_min = i;
-                    }
+                // Dung voi 1
+                if (v1 <= v2)
+                {
+                    v1 += v;
+                    Write("1", 1, si_result);
                 }
-                vn[index_min]+=v;
-                // Tranfs index min +1 to char
-                // Mượn c_readFile để lưu char sau khi convert
-                c_readFile = index_min+48+1;
-                Write(&c_readFile, 1, si_result);
+                else // Dung voi 2
+                {
+                    v2 += v;
+                    Write("2", 1, si_result);
+                }
             }
 
             if (flag_done_result == 1)
             {
-                // make vector v to zero
-                for(i = 0; i< SO_VOI_NUOC; ++i){
-                    vn[i]=0;
-                }
+                v1 = v2 = 0;
                 Close(si_result);
                 Signal("sinhvien");
                 break;

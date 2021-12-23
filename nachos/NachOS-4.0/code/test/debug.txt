@@ -1,0 +1,171 @@
+# Chạy trong main trước
+
+# SvVn:17-30
+STable::Create semaphore main - 0
+STable: Create in table[0]
+STable::Create semaphore sinhvien - 0
+STable: Create in table[1]
+STable::Create semaphore voinuoc - 0
+STable: Create in table[2]
+
+# xem thằng này như mở vòi nước
+STable::Create semaphore m_vn - 0
+STable: Create in table[3]
+
+# Thao tác input.txt, output.txt
+# Load số lượng test SLTD (4)
+
+# main:65 exec gọi sinh vien
+# sinhvien:15
+STable::Signal("m_vn")
+# thao tác trên là mở vòi nước
+# sinhvien:21
+STable::Wait("sinhvien")
+
+# main:74 exec gọi voinuoc
+# voinuoc:21
+STable::Wait("m_vn")
+# thao tác khóa vòi nước
+# voinuoc:33
+STable::Wait("voinuoc")
+
+# copy dòng đầu tiên sang sinhvien.txt (4 2 1)
+# main:120
+STable::Signal("sinhvien")
+# SvVn:123
+STable::Wait("main")
+
+# Tạo file result.txt, voinuoc.txt
+# sinhvien copy từng dung tích trong sinhvien.txt sang voinuoc.txt (4 2 1)
+# nếu nhận dc 1 dung tích thì chuyển sang voinuoc
+
+# sinhvien:83
+STable::Signal("voinuoc")
+# sinhvien:85
+STable::Wait("sinhvien")
+
+# Đọc dung tích trong voinuoc.txt
+# so sánh v1 và v2 sau đó chọn vòi
+# Cộng v vào vòi được chọn
+# kiểm tra flag_done_result thì khóa result.txt
+# Cho sinh viên vào hàng đợi để load dung tích của học sinh tiế p theo (Đang ở trong vòng while cấp 2)
+# voinuoc:91
+STable::Signal("sinhvien")
+# về lại đầu vòng for cấp 2
+# :)) How, sao ông Chung biết mà đặt wait ở đây
+# voinuoc:33
+STable::Wait("voinuoc")
+
+# Tương tự đoạn code trên từ dòng 32
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+
+# Xử lý sinh viên cuối và gặp kí tự *
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+# voinuoc:91
+STable::Signal("sinhvien")
+# voinuoc: kết thúc vòng lặp cấp 2 về lại đầu vòng lặp cấp 1
+# voinuoc:21
+STable::Wait("m_vn")
+# khóa vòi nước
+# sinhvien:108
+# xử lý xong 1 dòng thì về main
+STable::Signal("main")
+# Kết thúc 1 vòng lặp, quay lại đâu tiên
+STable::Wait("sinhvien")
+
+# main sẽ đọc result.txt và copy vào output.txt
+
+# mở vòi nước hoặc có thể hiểu là đưa về trạng thái trước ban đầu trước khi lặp của sinhvien
+# main:145
+STable::Signal("m_vn")
+# Quay về dòng main:85
+
+# tương tự 
+=================================
+# đọc 1 dòng
+# voinuoc:33
+STable::Wait("voinuoc")
+STable::Signal("sinhvien")
+
+STable::Wait("main")
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+
+// ??? Lỗi EOF
+STable::Signal("main")
+STable::Wait("sinhvien")
+STable::Wait("m_vn")
+STable::Signal("m_vn")
+STable::Wait("voinuoc")
+STable::Signal("sinhvien")
+STable::Wait("main")
+STable::Signal("main")
+STable::Signal("m_vn")
+STable::Signal("sinhvien")
+STable::Wait("main")
+^C
+Cleaning up after signal 2
+===========================================================
+PHẦN DƯỚI LÀ OUTPUT KHI KHÔNG BẬT DEBUG
+NÓ BÁO EOF VẬY THÔI CHỨ OUTPUT.TXT VẪN ĐÚNG 2 CASE ĐẦU, 2 CASE SAU RỖNG
+===========================================================
+
+EOF
+EOF
+EOF
+EOF
+EOF
+
+ Lan thu: 3
+EOF
+EOF
+EOF
+EOF
+EOF
+EOF
+
+ Lan thu: 2
+EOF
+EOF
+
+ Lan thu: 1
+Full slot in openTable
+^CEOF
+Cleaning up after signal 2
+======================================================================================================================
+TỔNG KẾT
+Lý do cần tạo các file trung gian dữa tiến trình là để các dữ liệu được dùng chung. 
+
+File sinh vien để pass từng dung tích thành input cho vòi nước
+Lý do làm vậy là vì ko biết có bao nhiêu lượt lấy nước, chỉ biết lây đến lúc EOF
+EOF của voinuoc.txt là kí tự *. sinhvien:76 và voinuoc:56
+voinuoc có 3 cấp vòng while
+    While cấp 3 để convert string -> int
+
+ý tưởng của voinuoc là đổ nước vào bình
+Thay vì xem ai đanh rảnh thì xem ai có lượng nước được lấy ít hơn tức là đang rảnh.
+
+main là khóa truy cập tiến trình SvVn
+sinhvien là khóa truy cập tiến trình sinhvien
+voinuoc là khóa truy cập tiến trình voinuoc
+k_vn là khóa mở cả 2 vòi nước
+
+Muốn tổng quát bài toán cho n vòi nước thì sửa lại code trong voi nuoc là tìm vòi < nhât trong n vòi
+Đoạn v!=0 (voinuoc:68) vô dụng, lỡ có sv xếp hàng xong ko muốn lấy nước nên bỏ if đó đi
