@@ -110,7 +110,7 @@ public:
 		for (int i = 2; i < 10; i++)
 		{
 			if (openTable[i] == NULL){
-				DEBUG(dbgFile, "FindFreeSlot: "<<i);
+				// printf("FindFreeSlot: %d\n",i);
 				return i;
 			}
 		}

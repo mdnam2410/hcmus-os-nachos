@@ -11,7 +11,8 @@ int main()
     int SLTD;                                        // Luu so luong thoi diem xet
     char c_readFile;                                 // Bien ki tu luu ki tu doc tu file
     // int flag;
-
+    int order;                                       // Thu tu test case
+    order = 1;
     //-----------------------------------------------------------
 
     // Khoi tao 4 Semaphore de quan ly 3 tien trinh
@@ -82,6 +83,10 @@ int main()
     // Thuc hien xu ly khi nao het thoi diem xet thi thoi
     while (SLTD--)
     {
+        PrintString("\nLan thu: ");
+        PrintNum(order++);
+        PrintString("\n");
+
         // Tao file sinhvien.txt
         f_Success = CreateFile("sinhvien.txt");
         if (f_Success == -1)
@@ -108,10 +113,13 @@ int main()
             }
             if (c_readFile != '\n')
             {
+                PrintChar(c_readFile);
                 Write(&c_readFile, 1, si_sinhvien);
             }
-            else
+            else{
+                PrintChar('\n');
                 break;
+            }
         }
         // Dong file sinhvien.txt lai
         Close(si_sinhvien);
@@ -131,9 +139,6 @@ int main()
             return 1;
         }
 
-        PrintString("\n Lan thu: ");
-        PrintNum(SLTD);
-        PrintString("\n");
 
         // Doc cac voi vao output.txt
         while (1)
