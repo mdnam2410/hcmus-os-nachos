@@ -1,6 +1,6 @@
 #include "syscall.h"
 #include "copyright.h"
-#define SO_VOI_NUOC 3
+#define SO_VOI_NUOC 2
 
 void main()
 {

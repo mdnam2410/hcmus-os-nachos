@@ -146,8 +146,8 @@ FileSystem::FileSystem(bool format)
     }
 
     // allocate openTable
-    openTable = new OpenFile *[10];
-    for (int i = 0; i < 10; ++i)
+    openTable = new OpenFile *[SIZE_TABLE];
+    for (int i = 0; i < SIZE_TABLE; ++i)
         openTable[i] = NULL;
 
     // Add stdin and stdout to table
@@ -277,7 +277,7 @@ FileSystem::Open(char *name, int type)
 // Find empty slot
 int FileSystem::FindFreeSlot()
 {
-    for (int i = 2; i < 10; i++)
+    for (int i = 2; i < SIZE_TABLE; i++)
     {
         if (openTable[i] == NULL)
             return i;

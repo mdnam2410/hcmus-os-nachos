@@ -1,0 +1,144 @@
+FindFreeSlot tai table 2
+Open file name input.txt has file id 2 lan thu 0
+FindFreeSlot tai table 3
+Open file name output.txt has file id 3 lan thu 1
+
+FindFreeSlot tai table 4
+Open file name result.txt has file id 4 lan thu 2
+Lan thu: 1
+FindFreeSlot tai table 5
+Open file name sinhvien.txt has file id 5 lan thu 3
+9 7 4 5 5 3 4 1 3 4 5
+Close file id 5 lan thu 0
+FindFreeSlot tai table 5
+Open file name sinhvien.txt has file id 5 lan thu 4
+SIZE :21
+21
+0
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 5
+Close file id 6 lan thu 1
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 6
+Close file id 6 lan thu 2
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 7
+Close file id 6 lan thu 3
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 8
+Close file id 6 lan thu 4
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 9
+Close file id 6 lan thu 5
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 10
+Close file id 6 lan thu 6
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 11
+Close file id 6 lan thu 7
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 12
+Close file id 6 lan thu 8
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 13
+Close file id 6 lan thu 9
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 14
+Close file id 6 lan thu 10
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 15
+Close file id 6 lan thu 11
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 16
+Close file id 6 lan thu 12
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 17
+Close file id 6 lan thu 13
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 18
+Close file id 6 lan thu 14
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 19
+Close file id 6 lan thu 15
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 20
+Close file id 6 lan thu 16
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 21
+Close file id 6 lan thu 17
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 22
+Close file id 6 lan thu 18
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 23
+Close file id 6 lan thu 19
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 24
+Close file id 6 lan thu 20
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 25
+Close file id 6 lan thu 21
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 26
+Close file id 6 lan thu 22
+Close file id 4 lan thu 23
+FindFreeSlot tai table 4
+Open file name voinuoc.txt has file id 4 lan thu 27
+FindFreeSlot tai table 6
+Open file name result.txt has file id 6 lan thu 28
+1 2 3 3 2 1 3 1 2 1 3 
+Close file id 6 lan thu 24
+
+FindFreeSlot tai table 6
+Open file name result.txt has file id 6 lan thu 29
+Lan thu: 2
+FindFreeSlot tai table 7
+Open file name sinhvien.txt has file id 7 lan thu 30
+8 5 2
+Close file id 7 lan thu 25
+FindFreeSlot tai table 7
+Open file name sinhvien.txt has file id 7 lan thu 31
+SIZE :5
+5
+0
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 32
+Close file id 8 lan thu 26
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 33
+Close file id 8 lan thu 27
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 34
+Close file id 8 lan thu 28
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 35
+Close file id 8 lan thu 29
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 36
+Close file id 8 lan thu 30
+FindFreeSlot tai table 8
+Open file name voinuoc.txt has file id 8 lan thu 37
+Close file id 8 lan thu 31
+Close file id 6 lan thu 32
+FindFreeSlot tai table 6
+Open file name voinuoc.txt has file id 6 lan thu 38
+FindFreeSlot tai table 8
+Open file name result.txt has file id 8 lan thu 39
+1 2 3 
+Close file id 8 lan thu 33
+FindFreeSlot tai table 8
+Open file name result.txt has file id 8 lan thu 40
+
+# Đóng input
+Close file id 2 lan thu 34
+# Đóng output
+Close file id 3 lan thu 35
+Machine halting!
+
+Ticks: total 20301, idle 8277, system 4600, user 7424
+Disk I/O: reads 0, writes 0
+Console I/O: reads 0, writes 84
+Paging: faults 0
+Network I/O: packets received 0, sent 0
+=======
+Nhận thấy có 40 lần mở file nhưng chỉ có 35 lần đóng -> Logic lỗi

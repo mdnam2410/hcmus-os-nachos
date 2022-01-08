@@ -433,7 +433,7 @@ void ExceptionHandlerOpen()
 		DEBUG(dbgFile, "\nType is not match");
 		kernel->machine->WriteRegister(2, -1); // fail
 	}
-	DEBUG(dbgFile,"Open file name "<< filename <<" has file id "<<freeSlot<<" lan thu " << count_open <<"\n");
+	DEBUG(dbgFile,"Open file name "<< filename <<" has file id "<<freeSlot<<" lan thu " << count_open++);
 	delete[] filename;
 }
 
@@ -446,8 +446,8 @@ void ExceptionHandlerClose()
 	int fileID;
 
 	fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
-	DEBUG(dbgFile,"Close file id "<<fileID<<" lan thu " << count_open <<"\n");
-	if (fileID >= 0 && fileID < 10)
+	DEBUG(dbgFile,"Close file id "<<fileID<<" lan thu " << count_close++ );
+	if (fileID >= 0 && fileID < SIZE_TABLE)
 	{
 		if (kernel->fileSystem->openTable[fileID])
 		{
@@ -485,7 +485,7 @@ void ExceptionHandlerRead()
 	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
 
 	// fileID is not match
-	if (fileID < 0 || fileID > 10)
+	if (fileID < 0 || fileID > SIZE_TABLE)
 	{
 		printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
@@ -558,7 +558,7 @@ void ExceptionHandlerWrite()
 	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
 
 	// fileId is not match
-	if (fileID < 0 || fileID > 10)
+	if (fileID < 0 || fileID > SIZE_TABLE)
 	{
 		// printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
@@ -641,7 +641,7 @@ void ExceptionHandlerSeek()
 	fileID = kernel->machine->ReadRegister(5);	 // read fileID from register r5
 
 	// fileId is not match
-	if (fileID < 0 || fileID > 10)
+	if (fileID < 0 || fileID > SIZE_TABLE)
 	{
 		// printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
@@ -672,7 +672,7 @@ void ExceptionHandlerSeek()
 	if (position == -1)
 	{
 		position = kernel->fileSystem->openTable[fileID]->Length();
-		DEBUG(dbgFile,"SIZE :" << position);
+		// DEBUG(dbgFile,"SIZE :" << position);
 	}
 
 	// position is not match
@@ -686,7 +686,7 @@ void ExceptionHandlerSeek()
 
 	// Seek cursor to position
 	kernel->fileSystem->openTable[fileID]->Seek(position);
-	DEBUG(dbgFile,position);
+	// DEBUG(dbgFile,position);
 	kernel->machine->WriteRegister(2, position);
 }
 

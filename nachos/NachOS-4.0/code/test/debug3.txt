@@ -1,0 +1,172 @@
+STable::Create semaphore main - 0
+STable: Create in table[0]
+STable::Create semaphore sinhvien - 0
+STable: Create in table[1]
+STable::Create semaphore voinuoc - 0
+STable: Create in table[2]
+STable::Create semaphore m_vn - 0
+STable: Create in table[3]
+Open file name input.txt has file id 2 lan thu 0
+Open file name output.txt has file id 3 lan thu 1
+STable::Signal("m_vn")
+STable::Wait("sinhvien")
+
+STable::Wait("m_vn")
+Open file name result.txt has file id 4 lan thu 2
+STable::Wait("voinuoc")
+Lan thu: 1
+Open file name sinhvien.txt has file id 5 lan thu 3
+9 7 4 5 5 3 4 1 3 4 5
+Close file id 5 lan thu 0
+STable::Signal("sinhvien")
+STable::Wait("main")
+Open file name sinhvien.txt has file id 5 lan thu 4
+Open file name voinuoc.txt has file id 6 lan thu 5
+Close file id 6 lan thu 1
+STable::Signal("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 6
+Close file id 6 lan thu 2
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 7
+Close file id 6 lan thu 3
+STable::Signal("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 8
+Close file id 6 lan thu 4
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 9
+Close file id 6 lan thu 5
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 10
+Close file id 6 lan thu 6
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 11
+Close file id 6 lan thu 7
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 12
+Close file id 6 lan thu 8
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 13
+Close file id 6 lan thu 9
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 14
+Close file id 6 lan thu 10
+STable::Signal("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 15
+STable::Wait("voinuoc")
+Close file id 6 lan thu 11
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 16
+Close file id 6 lan thu 12
+STable::Signal("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 17
+STable::Wait("voinuoc")
+Close file id 6 lan thu 13
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 18
+Close file id 6 lan thu 14
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 19
+Close file id 6 lan thu 15
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 20
+Close file id 6 lan thu 16
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 21
+Close file id 6 lan thu 17
+STable::Signal("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 22
+Close file id 6 lan thu 18
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 23
+Close file id 6 lan thu 19
+STable::Signal("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 24
+Close file id 6 lan thu 20
+STable::Wait("sinhvien")
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 6 lan thu 25
+Close file id 6 lan thu 21
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 6 lan thu 26
+Close file id 6 lan thu 22
+Close file id 4 lan thu 23
+STable::Signal("sinhvien")
+Open file name voinuoc.txt has file id 4 lan thu 27
+STable::Signal("main")
+STable::Wait("sinhvien")
+Open file name result.txt has file id 6 lan thu 28
+1STable::Wait("m_vn")
+ 2 3 3 2 1 3 1 2 1 3 
+Close file id 6 lan thu 24
+STable::Signal("m_vn")
+
+Open file name result.txt has file id 6 lan thu 29
+STable::Wait("voinuoc")
+Lan thu: 2
+Open file name sinhvien.txt has file id 7 lan thu 30
+8 5 2
+Close file id 7 lan thu 25
+STable::Signal("sinhvien")
+Open file name sinhvien.txt has file id 7 lan thu 31
+Open file name voinuoc.txt has file id 8 lan thu 32
+STable::Wait("main")
+Close file id 8 lan thu 26
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 8 lan thu 33
+Close file id 8 lan thu 27
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 8 lan thu 34
+Close file id 8 lan thu 28
+STable::Signal("voinuoc")
+STable::Wait("sinhvien")
+Open file name voinuoc.txt has file id 8 lan thu 35
+Close file id 8 lan thu 29
+STable::Signal("sinhvien")
+STable::Wait("voinuoc")
+Open file name voinuoc.txt has file id 8 lan thu 36
+Close file id 8 lan thu 30
+STable::Signal("voinuoc")
+Open file name voinuoc.txt has file id 8 lan thu 37
+Close file id 8 lan thu 31
+STable::Wait("sinhvien")
+Close file id 6 lan thu 32
+STable::Signal("sinhvien")
+STable::Wait("m_vn")
+Open file name voinuoc.txt has file id 6 lan thu 38
+STable::Signal("main")
+Open file name result.txt has file id 8 lan thu 39
+1STable::Wait("sinhvien")
+ 2 3 
+Close file id 8 lan thu 33
+STable::Signal("m_vn")
+Open file name result.txt has file id 8 lan thu 40
+STable::Wait("voinuoc")
+Close file id 2 lan thu 34
+Close file id 3 lan thu 35
+Machine halting!
+
+Ticks: total 20301, idle 8277, system 4600, user 7424
+Disk I/O: reads 0, writes 0
+Console I/O: reads 0, writes 84
+Paging: faults 0
+Network I/O: packets received 0, sent 0

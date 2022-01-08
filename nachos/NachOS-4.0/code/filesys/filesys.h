@@ -32,10 +32,12 @@
 
 #ifndef FS_H
 #define FS_H
+#define SIZE_TABLE 10
 
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#include "debug.h"
 
 #ifdef FILESYS_STUB // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
@@ -49,8 +51,8 @@ public:
 	FileSystem()
 	{
 		// allocate openTable
-		openTable = new OpenFile *[10];
-		for (int i = 0; i < 10; ++i)
+		openTable = new OpenFile *[SIZE_TABLE];
+		for (int i = 0; i < SIZE_TABLE; ++i)
 			openTable[i] = NULL;
 
 		// Add stdin and stdout to table
@@ -63,7 +65,7 @@ public:
 	//	Destructor
 	~FileSystem()
 	{
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < SIZE_TABLE; i++)
 		{
 			if (openTable[i] != NULL)
 				delete openTable[i];
@@ -107,10 +109,10 @@ public:
 	// Find free slot in openTable
 	int FindFreeSlot()
 	{
-		for (int i = 2; i < 10; i++)
+		for (int i = 2; i < SIZE_TABLE; i++)
 		{
 			if (openTable[i] == NULL){
-				// printf("FindFreeSlot: %d\n",i);
+				// DEBUG(dbgFile,"FindFreeSlot in table "<<i);
 				return i;
 			}
 		}
