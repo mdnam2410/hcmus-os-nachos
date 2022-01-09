@@ -485,7 +485,7 @@ void ExceptionHandlerRead()
 	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
 
 	// fileID is not match
-	if (fileID < 0 || fileID > SIZE_TABLE)
+	if (fileID < 0 || fileID >= SIZE_TABLE)
 	{
 		printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
@@ -558,7 +558,7 @@ void ExceptionHandlerWrite()
 	fileID = kernel->machine->ReadRegister(6);	 // read fileID from register r6
 
 	// fileId is not match
-	if (fileID < 0 || fileID > SIZE_TABLE)
+	if (fileID < 0 || fileID >= SIZE_TABLE)
 	{
 		// printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
@@ -641,7 +641,7 @@ void ExceptionHandlerSeek()
 	fileID = kernel->machine->ReadRegister(5);	 // read fileID from register r5
 
 	// fileId is not match
-	if (fileID < 0 || fileID > SIZE_TABLE)
+	if (fileID < 0 || fileID >= SIZE_TABLE)
 	{
 		// printf("FileID is not match\n");
 		DEBUG(dbgFile, "FileID is not match");
