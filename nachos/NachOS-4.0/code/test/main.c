@@ -10,7 +10,6 @@ int main()
     int si_input, si_output, si_sinhvien, si_result; // Bien id cho file
     int SLTD;                                        // Luu so luong thoi diem xet
     char c_readFile;                                 // Bien ki tu luu ki tu doc tu file
-    // int flag;
     int order;                                       // Thu tu test case
     order = 1;
     //-----------------------------------------------------------

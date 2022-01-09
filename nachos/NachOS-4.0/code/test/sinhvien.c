@@ -113,10 +113,10 @@ void main()
             i_File++;
         }
         // WHILE(2222222222222222222222222222222222222222)
-        // Ket thuc tien trinh sinhvien va voinuoc quay lai ham SvVn
+        // Ket thuc tien trinh sinhvien va voinuoc quay lai tien trinh main
         Close(si_sinhvien);
         Signal("main");
     }
     // WHILE(11111111111111111111111111111111111111)
-    // Quay lai ham Svvn
+    // Quay lai tien trinh main
 }

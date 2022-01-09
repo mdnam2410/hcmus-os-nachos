@@ -8,7 +8,7 @@ void main()
     int f_Success;             // Bien co dung de kiem tra thanh cong
     int si_voinuoc, si_result; // Bien id cho file
     char c_readFile;           // Bien ki tu luu ki tu doc tu file
-    int vn[SO_VOI_NUOC];                // n voi nuoc
+    int vn[SO_VOI_NUOC];       // n voi nuoc
     int v;                     // Dung tich nuoc cua sinh vien
     int flag_done_result;      // Bien co luu dau hieu doc xong file result
     int index_min;
