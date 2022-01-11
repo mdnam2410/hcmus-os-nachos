@@ -3,7 +3,7 @@
 
 #include "synch.h"
 #include "thread.h"
-
+class Semaphore;
 // The process control block
 //
 // This class stores and manages information necessary to execute and join

@@ -433,7 +433,6 @@ void ExceptionHandlerOpen()
 		DEBUG(dbgFile, "\nType is not match");
 		kernel->machine->WriteRegister(2, -1); // fail
 	}
-	DEBUG(dbgFile,"Open file name "<< filename <<" has file id "<<freeSlot<<" lan thu " << count_open++);
 	delete[] filename;
 }
 
@@ -446,7 +445,6 @@ void ExceptionHandlerClose()
 	int fileID;
 
 	fileID = kernel->machine->ReadRegister(4); // read fileID from register r4
-	DEBUG(dbgFile,"Close file id "<<fileID<<" lan thu " << count_close++ );
 	if (fileID >= 0 && fileID < SIZE_TABLE)
 	{
 		if (kernel->fileSystem->openTable[fileID])
@@ -705,7 +703,7 @@ void ExceptionHandlerExec()
 	DEBUG(dbgSys, "Read file name: " << fileName);
 
 	DEBUG(dbgSys, "Scheduling execution...");
-	int result = pTab->ExecUpdate(fileName);
+	int result = kernel->pTab->ExecUpdate(fileName);
 
 	DEBUG(dbgSys, "Writing result to register 2: " << result);
 	kernel->machine->WriteRegister(2, result);
@@ -719,7 +717,7 @@ void ExceptionHandlerJoin()
 {
 	DEBUG(dbgSys, "Syscall: Join");
 	int id = kernel->machine->ReadRegister(4);
-	int result = pTab->JoinUpdate(id);
+	int result = kernel->pTab->JoinUpdate(id);
 	kernel->machine->WriteRegister(2, result);
 }
 
@@ -730,7 +728,7 @@ void ExceptionHandlerExit()
 {
 	DEBUG(dbgSys, "Syscall: Exit");
 	int exitCode = kernel->machine->ReadRegister(4);
-	int result = pTab->ExitUpdate(exitCode);
+	int result = kernel->pTab->ExitUpdate(exitCode);
 }
 
 // Usage: Create a semaphore
@@ -753,7 +751,7 @@ void ExceptionHandlerCreateSemaphore()
 		return;
 	}
 	
-	int res = semTab->Create(name, semVal);
+	int res = kernel->semTab->Create(name, semVal);
 
 	// Check error
 	if(res == -1)
@@ -786,7 +784,7 @@ void ExceptionHandlerWait()
 		return;
 	}
 
-	int res = semTab->Wait(name);
+	int res = kernel->semTab->Wait(name);
 	
 	// Check error
 	if(res == -1)
@@ -819,7 +817,7 @@ void ExceptionHandlerSignal()
 		return;
 	}
 	
-	int res = semTab->Signal(name);
+	int res = kernel->semTab->Signal(name);
 
 	// Check error
 	if(res == -1)

@@ -87,7 +87,7 @@ AddrSpace::~AddrSpace()
 {
     int i;
     for (i = 0; i < numPages; ++i) {
-        gPhysPageBitMap->Clear(pageTable[i].physicalPage);
+        kernel->gPhysPageBitMap->Clear(pageTable[i].physicalPage);
     }
     delete pageTable;
 }
@@ -138,14 +138,14 @@ bool AddrSpace::Load(char* fileName)
     
     // ---- Allocate physical frames ---
 
-    addrLock->P();
+    kernel->addrLock->P();
     char *mem = kernel->machine->mainMemory;
 
-    if (this->numPages > gPhysPageBitMap->NumClear()) {
+    if (this->numPages > kernel->gPhysPageBitMap->NumClear()) {
         fprintf(stderr, "AddrSpace: Not enough memory for new process..!\n");
         this->numPages = 0;
         delete executable;
-        addrLock->V();
+        kernel->addrLock->V();
         return FALSE;
     }
 
@@ -154,7 +154,7 @@ bool AddrSpace::Load(char* fileName)
     this->pageTable = new TranslationEntry[numPages];
     for (int i = 0; i < numPages; i++) {
         this->pageTable[i].virtualPage = i;
-        int clearFrame = gPhysPageBitMap->FindAndSet();
+        int clearFrame = kernel->gPhysPageBitMap->FindAndSet();
         this->pageTable[i].physicalPage = clearFrame;
         DEBUG(
             dbgAddr,
@@ -222,7 +222,7 @@ bool AddrSpace::Load(char* fileName)
         );
     }
 
-    addrLock->V();
+    kernel->addrLock->V();
     delete[] buffer;
     delete executable;
     return TRUE;

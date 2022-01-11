@@ -2,13 +2,13 @@
 #define PTABLE_H
 
 #include "pcb.h"
-
 #include "bitmap.h"
 #include "synch.h"
 #include "thread.h"
 
 #define MAX_PROCESSES 10
-
+class PCB;
+class Semaphore;
 class PTable {
 public:
     // Initializes process table with `size` entries

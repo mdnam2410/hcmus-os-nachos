@@ -1,8 +1,8 @@
 #ifndef SEM_H
 #define SEM_H
 #include "synch.h"
+class Semaphore;
 
-#endif // SEM_H
 
 // Class Sem use to manage Semaphore
 class Sem
@@ -23,3 +23,4 @@ public:
 	
 	char* getName();
 };
+#endif // SEM_H

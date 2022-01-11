@@ -202,6 +202,12 @@ void Lock::Release()
     semaphore->V();
 }
 
+bool Lock::IsHeldByCurrentThread() 
+{ 
+    // return true if the current thread holds this lock.
+    return lockHolder == kernel->currentThread; 
+}
+
 //----------------------------------------------------------------------
 // Condition::Condition
 // 	Initialize a condition variable, so that it can be 

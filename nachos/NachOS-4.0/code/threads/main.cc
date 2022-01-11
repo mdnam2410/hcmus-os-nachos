@@ -45,18 +45,11 @@
 #include "filesys.h"
 #include "machine.h"
 #include "openfile.h"
-#include "ptable.h"
-#include "synch.h"
 #include "sysdep.h"
-#include "stable.h" 
 
 // global variables
 Kernel *kernel;
 Debug *debug;
-Bitmap *gPhysPageBitMap = new Bitmap(NumPhysPages);
-Semaphore *addrLock = new Semaphore("addrLock", 1);
-PTable *pTab = new PTable;
-STable *semTab = new STable;
 //----------------------------------------------------------------------
 // Cleanup
 //	Delete kernel data structures; called when user hits "ctl-C".
@@ -291,7 +284,7 @@ main(int argc, char **argv)
 
     // finally, run an initial user program if requested to do so
     if (userProgName != NULL) {
-        pTab->InitializeFirstProcess(userProgName, kernel->currentThread);
+        kernel->pTab->InitializeFirstProcess(userProgName, kernel->currentThread);
       AddrSpace *space = new AddrSpace;
       ASSERT(space != (AddrSpace *)NULL);
       if (space->Load(userProgName)) {  // load the program into the space
