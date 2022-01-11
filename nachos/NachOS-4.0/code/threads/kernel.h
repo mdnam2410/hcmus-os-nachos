@@ -19,6 +19,9 @@
 #include "filesys.h"
 #include "machine.h"
 // #include "synchcons.h"
+#include "bitmap.h"
+#include "ptable.h"
+#include "stable.h"
 
 class PostOfficeInput;
 class PostOfficeOutput;
@@ -26,6 +29,9 @@ class SynchConsoleInput;
 class SynchConsoleOutput;
 class SynchDisk;
 // class SynchConsole;
+class PTable;
+class STable;
+class Semaphore;
 
 class Kernel
 {
@@ -60,6 +66,10 @@ public:
   PostOfficeInput *postOfficeIn;
   PostOfficeOutput *postOfficeOut;
   // SynchConsole *synchCons;
+  Bitmap *gPhysPageBitMap;
+  Semaphore *addrLock;
+  PTable *pTab;
+  STable *semTab;
 
   int hostName; // machine identifier
 

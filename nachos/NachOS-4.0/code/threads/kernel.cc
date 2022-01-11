@@ -119,6 +119,10 @@ void Kernel::Initialize()
     synchDisk = new SynchDisk();                          //
     // synchCons = new SynchConsole();
 
+    gPhysPageBitMap = new Bitmap(NumPhysPages);
+    addrLock = new Semaphore("addrLock", 1);
+    pTab = new PTable;
+    semTab = new STable;
 #ifdef FILESYS_STUB
     fileSystem = new FileSystem();
 #else
@@ -149,7 +153,10 @@ Kernel::~Kernel()
     delete postOfficeIn;
     delete postOfficeOut;
     // delete synchCons;
-
+    delete gPhysPageBitMap;
+    delete addrLock;
+    delete pTab;
+    delete semTab;
     Exit(0);
 }
 

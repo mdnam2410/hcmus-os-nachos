@@ -3,7 +3,7 @@
 #include "sem.h"
 #include "bitmap.h"
 #define MAX_SEMAPHORE 10
-
+class Sem;
 class STable
 {
 private:
