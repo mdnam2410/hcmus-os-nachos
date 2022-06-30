@@ -14,3 +14,6 @@ Nashos version: 4.0
 
 ## Installation
 You can read the full building instruction [here](https://www.fit.hcmus.edu.vn/~ntquan/os/setup_nachos.html)
+
+### Explain
+<img src="docs/sinhvien-voinuoc.png" alt="Explain"/>
